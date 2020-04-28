@@ -31,7 +31,7 @@
     <aop:config>
         <aop:aspect ref="logAspect" order="1">
             <aop:pointcut id="logPointcut"
-                          expression="execution(* com.example.demo.service.TestService.setType(java.lang.String,com.example.demo.pojo.Type))"/>
+                          expression="execution(* com.example.demo.service.TestService.queryById(java.lang.String))"/>
             <aop:before method="doBefore" pointcut-ref="logPointcut"/>
             <aop:after method="doAfter" pointcut-ref="logPointcut"/>
             <aop:around method="doAround" pointcut-ref="logPointcut"/>

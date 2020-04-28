@@ -2,7 +2,6 @@ package com.example.demo;
 
 import com.example.demo.controller.TestController;
 import com.example.demo.service.TestService;
-import com.example.demo.pojo.Type;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -16,6 +15,6 @@ public class SimpleTest {
         System.out.println(controller);
         TestService testService = (TestService) context.getBean("testService");
         System.out.println(testService);
-        System.out.println(testService.setType("1", new Type("vip")));
+        System.out.println(testService.queryById("1"));
     }
 }
