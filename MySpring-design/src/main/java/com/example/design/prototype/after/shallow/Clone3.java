@@ -1,4 +1,4 @@
-package com.example.design.prototype.shallow;
+package com.example.design.prototype.after.shallow;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,18 +11,18 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Clone2 implements Cloneable {
+public class Clone3 implements Cloneable {
 
     private String name;
 
     @Override
-    protected Clone2 clone() throws CloneNotSupportedException {
-        return (Clone2) super.clone();
+    protected Clone3 clone() throws CloneNotSupportedException {
+        return (Clone3) super.clone();
     }
 
     public static void main(String[] args) throws CloneNotSupportedException {
-        Clone2 prototype = new Clone2("007");
-        Clone2 clone = prototype.clone();
+        Clone3 prototype = new Clone3("007");
+        Clone3 clone = prototype.clone();
         clone.setName("008");
         System.out.println(prototype);
         System.out.println(clone);

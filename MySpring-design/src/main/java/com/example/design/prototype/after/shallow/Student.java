@@ -1,4 +1,4 @@
-package com.example.design.prototype.shallow;
+package com.example.design.prototype.after.shallow;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
