@@ -2,7 +2,6 @@ package com.example.design.prototype.after.deep;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -17,7 +16,6 @@ import java.util.Set;
  * @date 2020/05/06
  */
 @SuppressWarnings({"unused", "unchecked"})
-@Slf4j
 public class CloneUtils {
 
     /**
