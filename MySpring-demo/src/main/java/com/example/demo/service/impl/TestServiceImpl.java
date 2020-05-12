@@ -5,6 +5,7 @@ import com.example.demo.pojo.User;
 import com.example.demo.service.TestService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author SuccessZhang
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 @SuppressWarnings("unused")
 @Lazy
 @Service("testService")
+@Transactional(rollbackFor = Exception.class,
+        transactionManager = "myTransactionManager")
 public class TestServiceImpl implements TestService {
 
     @Override
