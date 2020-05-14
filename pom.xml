@@ -76,6 +76,18 @@
                 <scope>provided</scope>
             </dependency>
 
+            <!-- log -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.25</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.2.3</version>
+            </dependency>
+
             <!--java se-->
             <dependency>
                 <groupId>javax.servlet</groupId>
@@ -87,6 +99,7 @@
                 <artifactId>jstl</artifactId>
                 <version>1.2</version>
             </dependency>
+
             <!--spring需要的依赖-->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -105,6 +118,11 @@
             </dependency>
 
             <!--spring 核心包-->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-webmvc</artifactId>
