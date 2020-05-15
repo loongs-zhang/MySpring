@@ -1,5 +1,6 @@
 package com.example.design.proxy.mydynamicproxy.test;
 
+import com.example.design.proxy.dynamicproxy.cglib.Graduate;
 import com.example.design.proxy.mydynamicproxy.cglib.Enhancer;
 import com.example.design.proxy.mydynamicproxy.cglib.MethodInterceptor;
 import com.example.design.proxy.mydynamicproxy.cglib.MethodProxy;

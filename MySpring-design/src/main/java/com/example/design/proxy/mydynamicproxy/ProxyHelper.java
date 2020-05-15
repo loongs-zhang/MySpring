@@ -5,6 +5,7 @@ import com.example.design.proxy.mydynamicproxy.manager.ClassFileManager;
 import com.example.design.proxy.mydynamicproxy.source.ClassFile;
 import com.example.design.proxy.mydynamicproxy.source.CodeFile;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +20,8 @@ public class ProxyHelper {
     private static int proxyClassCount = 0;
 
     private static final Map<Class<?>, Object> CLASS_INSTANCE_CACHE = new HashMap<>(16);
+
+    private static final Map<Method, Integer> METHOD_INDEX_CACHE = new HashMap<>(64);
 
     /**
      * @see com.example.design.proxy.mydynamicproxy.manager.ClassFileManager
@@ -50,5 +53,13 @@ public class ProxyHelper {
 
     public static void putClassInstance(Class<?> superClass, Object classInstance) {
         CLASS_INSTANCE_CACHE.put(superClass, classInstance);
+    }
+
+    public static Integer getMethodIndex(Method method) {
+        return METHOD_INDEX_CACHE.get(method);
+    }
+
+    public static void putMethodIndex(Method method, Integer index) {
+        METHOD_INDEX_CACHE.put(method, index);
     }
 }

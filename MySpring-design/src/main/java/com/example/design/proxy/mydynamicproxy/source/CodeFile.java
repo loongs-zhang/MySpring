@@ -99,6 +99,9 @@ public class CodeFile extends SimpleJavaFileObject {
         this(new URI(ProxyHelper.PROXY_CLASS_PREFIX + ProxyHelper.getProxyClassCount() + JAVA_SOURCE_FILE.extension), JAVA_SOURCE_FILE, type);
     }
 
+    /**
+     * @see CodeFile#generateSrc(Class)
+     */
     private CodeFile(URI uri, Kind kind, Class<?> type) {
         super(uri, kind);
         this.src = generateSrc(type);
@@ -106,6 +109,8 @@ public class CodeFile extends SimpleJavaFileObject {
 
     /**
      * cglib
+     *
+     * @see CodeFile#implementsFastClass(Class, List, Method[], StringBuilder)
      */
     private String generateSrc(Class<?> type) {
         List<String> names = new ArrayList<>();
@@ -114,37 +119,43 @@ public class CodeFile extends SimpleJavaFileObject {
         Method[] methods = type.getMethods();
         //利用反射生成java源代码
         StringBuilder sb = new StringBuilder();
-        sb.append("package ").append(ProxyClassLoader.class.getPackage().getName()).append(";\n");
+        sb.append("package ").append(ProxyClassLoader.class.getPackage()
+                .getName()).append(";\n");
         sb.append("import ").append(FastClass.class.getName()).append(";\n");
         sb.append("import ").append(MethodInterceptor.class.getName()).append(";\n");
-        sb.append("import ").append(type.getName()).append(";\n");
         sb.append("import ").append(MethodProxy.class.getName()).append(";\n");
         sb.append("import java.lang.reflect.*;\n");
 
-        sb.append("public class $Proxy").append(ProxyHelper.getProxyClassCount()).append(" extends ").append(type.getSimpleName()).append(" implements ").append(FastClass.class.getSimpleName()).append(" {\n");
+        sb.append("public class $Proxy").append(ProxyHelper.getProxyClassCount())
+                .append(" extends ").append(type.getName()).append(" implements ")
+                .append(FastClass.class.getSimpleName()).append(" {\n");
         sb.append("private MethodInterceptor h;\n");
-        sb.append("public $Proxy").append(ProxyHelper.getProxyClassCount()).append("(MethodInterceptor h){\nthis.h=h;\n}\n");
+        sb.append("public $Proxy").append(ProxyHelper.getProxyClassCount())
+                .append("(MethodInterceptor h){\nthis.h=h;\n}\n");
 
         int methodIndex = 0;
-        generateDefinitionMethodMemberVariables(names, new ArrayList<>(Arrays.asList(methods)), sb, methodIndex);
+        generateDefinitionMethodMemberVariables(names,
+                new ArrayList<>(Arrays.asList(methods)), sb, methodIndex);
 
         methodIndex = 0;
         for (Method method : methods) {
             String modifiers = Modifier.toString(method.getModifiers());
             String returnTypeName = method.getReturnType().getName();
-            if (!names.contains(method.getName()) && !modifiers.contains("final") && !modifiers.contains("native")) {
+            if (!names.contains(method.getName()) && !modifiers.contains("final")
+                    && !modifiers.contains("native")) {
                 generationMethodDefinition(sb, method, modifiers, returnTypeName);
 
                 sb.append("Object $result = null;\n");
                 sb.append("try{\n");
-
-                sb.append("$result = this.h.intercept(this,m").append(methodIndex).append(",new Object[]{");
+                sb.append("$result = this.h.intercept(this,m").append(methodIndex)
+                        .append(",new Object[]{");
                 for (Parameter parameter : method.getParameters()) {
                     sb.append(parameter.getName());
                     sb.append(",");
                 }
                 deleteRedundantChar(sb, "{");
-                sb.append("},new MethodProxy(this,m").append(methodIndex++).append("));\n");
+                sb.append("},new MethodProxy(this,m").append(methodIndex++)
+                        .append("));\n");
 
                 sb.append("}catch (Throwable t) {\nt.printStackTrace();\n}\n");
                 generateReturn(sb, returnTypeName);
@@ -215,8 +226,23 @@ public class CodeFile extends SimpleJavaFileObject {
 
     /**
      * 实现{@link com.example.design.proxy.mydynamicproxy.cglib.FastClass}接口。
+     *
+     * @see FastClass#getIndexAndCache(Method)
+     * @see CodeFile#getHashCode(String, Class[])
      */
     private void implementsFastClass(Class<?> type, List<String> names, Method[] methods, StringBuilder sb) {
+        //在成员变量加载完成后初始化index并缓存
+        sb.append("{\n");
+        for (int i = 0; i < methods.length; i++) {
+            Method method = methods[i];
+            String modifiers = Modifier.toString(method.getModifiers());
+            if (!names.contains(method.getName()) && !modifiers.contains("final")
+                    && !modifiers.contains("native")) {
+                sb.append("getIndexAndCache(m").append(i).append(");\n");
+            }
+        }
+        sb.append("}\n");
+
         //实现getIndex
         sb.append("@Override\n");
         sb.append("public int getIndex(String name, Class[] parameterTypes) {\n");
@@ -228,8 +254,11 @@ public class CodeFile extends SimpleJavaFileObject {
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
             String modifiers = Modifier.toString(method.getModifiers());
-            if (!names.contains(method.getName()) && !modifiers.contains("final") && !modifiers.contains("native")) {
-                sb.append("case ").append(getHashCode(method.getName(), method.getParameterTypes())).append(":return ").append(i).append(";\n");
+            if (!names.contains(method.getName()) && !modifiers.contains("final")
+                    && !modifiers.contains("native")) {
+                sb.append("case ").append(getHashCode(method.getName(),
+                        method.getParameterTypes())).append(":return ")
+                        .append(i).append(";\n");
             }
         }
         sb.append("default:break;\n");
@@ -239,26 +268,32 @@ public class CodeFile extends SimpleJavaFileObject {
 
         //实现invoke
         sb.append("@Override\n");
-        sb.append("public Object invoke(int index, Object obj, Object[] args) throws InvocationTargetException {\n");
-        sb.append(type.getSimpleName()).append(" object = (").append(type.getSimpleName()).append(") obj;\n");
+        sb.append("public Object invoke(int index, Object obj, Object[] args) throws");
+        sb.append(" InvocationTargetException {\n");
+        sb.append(type.getName()).append(" object = (").append(type.getName())
+                .append(") obj;\n");
         sb.append("switch (index) {\n");
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
             String modifiers = Modifier.toString(method.getModifiers());
-            if (!names.contains(method.getName()) && !modifiers.contains("final") && !modifiers.contains("native")) {
+            if (!names.contains(method.getName()) && !modifiers.contains("final")
+                    && !modifiers.contains("native")) {
                 sb.append("case ").append(i).append(":");
                 String returnTypeName = method.getReturnType().getName();
-                if (!"java.lang.Void".equals(returnTypeName) && !"void".equals(returnTypeName)) {
+                if (!"java.lang.Void".equals(returnTypeName)
+                        && !"void".equals(returnTypeName)) {
                     sb.append("return ");
                 }
                 sb.append("object.").append(method.getName()).append("(");
                 Class<?>[] parameterTypes = method.getParameterTypes();
                 for (int j = 0; j < parameterTypes.length; j++) {
-                    sb.append("(").append(parameterTypes[j].getName()).append(")args[").append(j).append("]").append(",");
+                    sb.append("(").append(parameterTypes[j].getName())
+                            .append(")args[").append(j).append("]").append(",");
                 }
                 deleteRedundantChar(sb, "(");
                 sb.append(");\n");
-                if ("java.lang.Void".equals(returnTypeName) || "void".equals(returnTypeName)) {
+                if ("java.lang.Void".equals(returnTypeName) ||
+                        "void".equals(returnTypeName)) {
                     sb.append("break;\n");
                 }
             }
