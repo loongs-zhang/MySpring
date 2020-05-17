@@ -30,7 +30,7 @@ public class ProxyHelper {
         try {
             ClassFileManager classFileManager = new ClassFileManager();
             //4.编译java文件，从内存中生成（非写入）class文件
-            if (!classFileManager.getCompilationTask(codeSource)) {
+            if (!classFileManager.compile(codeSource)) {
                 return null;
             }
             //5.获取字节码容器
