@@ -16,6 +16,18 @@ public class MethodExample {
             method.setAccessible(true);
             Object result = method.invoke(user);
             System.out.println(result);
+
+            Method getHello = userClass.getDeclaredMethod("getHello");
+            System.out.println(getHello.invoke(null));
+
+            Method testArgs = userClass.getDeclaredMethod("testArgs", String[].class);
+            try {
+                testArgs.invoke(null, new String[]{"1", "2"});
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("invoke failed");
+            }
+            testArgs.invoke(null, (Object) new String[]{"1", "2"});
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {

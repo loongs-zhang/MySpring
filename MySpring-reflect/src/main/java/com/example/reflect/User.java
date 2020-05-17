@@ -2,6 +2,8 @@ package com.example.reflect;
 
 import lombok.Data;
 
+import java.util.Arrays;
+
 /**
  * @author SuccessZhang
  * @date 2020/04/29
@@ -32,6 +34,10 @@ public class User {
     }
 
     public static String getHello() {
-        return "hello";
+        return "hello2";
+    }
+
+    public static void testArgs(String[] args1) {
+        System.out.println(Arrays.toString(args1));
     }
 }
