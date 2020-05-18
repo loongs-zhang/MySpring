@@ -1,7 +1,6 @@
 package com.example.design.proxy.dynamiccompile.compile;
 
 import javax.tools.SimpleJavaFileObject;
-import java.io.IOException;
 import java.net.URI;
 
 /**
@@ -20,8 +19,21 @@ public class JavaFile extends SimpleJavaFileObject {
         this.content = content;
     }
 
+    /**
+     * 跟踪获取源码的调用链路。
+     *
+     * @see com.sun.tools.javac.api.JavacTaskImpl#call()
+     * @see com.sun.tools.javac.api.JavacTaskImpl#doCall()
+     * @see com.sun.tools.javac.main.Main#compile(String[], String[], com.sun.tools.javac.util.Context, com.sun.tools.javac.util.List, Iterable)
+     * @see com.sun.tools.javac.main.JavaCompiler#compile(com.sun.tools.javac.util.List, com.sun.tools.javac.util.List, Iterable)
+     * @see com.sun.tools.javac.main.JavaCompiler#parseFiles(Iterable)
+     * @see com.sun.tools.javac.main.JavaCompiler#parse(javax.tools.JavaFileObject)
+     * @see com.sun.tools.javac.main.JavaCompiler#readSource(javax.tools.JavaFileObject)
+     * @see javax.tools.JavaFileObject#getCharContent(boolean)
+     * @see JavaFile#getCharContent(boolean)
+     */
     @Override
-    public CharSequence getCharContent(boolean ignoreEncodingErrors) throws IOException {
+    public CharSequence getCharContent(boolean ignoreEncodingErrors) {
         return this.content;
     }
 
