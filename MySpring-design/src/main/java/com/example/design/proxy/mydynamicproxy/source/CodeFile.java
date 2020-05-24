@@ -55,7 +55,7 @@ public class CodeFile extends SimpleJavaFileObject {
 
         sb.append("public class $Proxy").append(ProxyHelper.getProxyClassCount()).append(" extends ").append(Proxy.class.getName()).append(" implements ");
         for (Class<?> i : interfaces) {
-            sb.append(i.getName());
+            sb.append(handleInnerClass(i.getName()));
             sb.append(",");
         }
         deleteRedundantChar(sb, "");
@@ -127,7 +127,7 @@ public class CodeFile extends SimpleJavaFileObject {
         sb.append("import java.lang.reflect.*;\n");
 
         sb.append("public class $Proxy").append(ProxyHelper.getProxyClassCount())
-                .append(" extends ").append(type.getName()).append(" implements ")
+                .append(" extends ").append(handleInnerClass(type.getName())).append(" implements ")
                 .append(FastClass.class.getSimpleName()).append(" {\n");
         sb.append("private MethodInterceptor h;\n");
         sb.append("public $Proxy").append(ProxyHelper.getProxyClassCount())
@@ -170,6 +170,10 @@ public class CodeFile extends SimpleJavaFileObject {
         return sb.toString();
     }
 
+    private String handleInnerClass(String className) {
+        return className.replaceAll("\\$", ".");
+    }
+
     private void generationMethodDefinition(StringBuilder sb, Method method, String modifiers, String returnTypeName) {
         sb.append("@Override\n");
         sb.append(modifiers.replace(" abstract", "")).append(" ");
@@ -202,7 +206,7 @@ public class CodeFile extends SimpleJavaFileObject {
             if (!names.contains(method.getName()) && !modifiers.contains("final") &&
                     !modifiers.contains("native")) {
                 sb.append("m").append(methodIndex++).append(" = ")
-                        .append(method.getDeclaringClass().getName()).append(".class")
+                        .append(method.getDeclaringClass().getName().replaceAll("\\$", ".")).append(".class")
                         .append(".getMethod(\"").append(method.getName()).append("\",");
                 for (Parameter parameter : method.getParameters()) {
                     sb.append(parameter.getType().getName()).append(".class");
@@ -270,8 +274,8 @@ public class CodeFile extends SimpleJavaFileObject {
         sb.append("@Override\n");
         sb.append("public Object invoke(int index, Object obj, Object[] args) throws");
         sb.append(" InvocationTargetException {\n");
-        sb.append(type.getName()).append(" object = (").append(type.getName())
-                .append(") obj;\n");
+        sb.append(handleInnerClass(type.getName())).append(" object = (")
+                .append(handleInnerClass(type.getName())).append(") obj;\n");
         sb.append("switch (index) {\n");
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
