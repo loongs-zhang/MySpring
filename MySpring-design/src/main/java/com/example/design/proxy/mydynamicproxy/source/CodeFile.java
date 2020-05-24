@@ -206,8 +206,9 @@ public class CodeFile extends SimpleJavaFileObject {
             if (!names.contains(method.getName()) && !modifiers.contains("final") &&
                     !modifiers.contains("native")) {
                 sb.append("m").append(methodIndex++).append(" = ")
-                        .append(method.getDeclaringClass().getName().replaceAll("\\$", ".")).append(".class")
-                        .append(".getMethod(\"").append(method.getName()).append("\",");
+                        .append(handleInnerClass(method.getDeclaringClass().getName()))
+                        .append(".class").append(".getMethod(\"")
+                        .append(method.getName()).append("\",");
                 for (Parameter parameter : method.getParameters()) {
                     sb.append(parameter.getType().getName()).append(".class");
                     sb.append(",");
