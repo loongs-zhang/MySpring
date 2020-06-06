@@ -10,11 +10,11 @@
         <module name="MySpring-design" />
         <module name="MySpring-aop" />
         <module name="MySpring-reflect" />
-        <module name="MySpring-final" />
-        <module name="MySpring-mvc" />
         <module name="MySpring-di" />
-        <module name="MySpring-ioc" />
         <module name="MySpring-demo" />
+        <module name="MySpring-final" />
+        <module name="MySpring-ioc" />
+        <module name="MySpring-mvc" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
