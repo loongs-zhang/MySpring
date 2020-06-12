@@ -2,7 +2,6 @@ package com.dragon.springframework.beans.factory.support;
 
 import com.dragon.springframework.beans.config.BeanDefinition;
 import com.dragon.springframework.beans.config.ConfigurableListableBeanFactory;
-import com.dragon.springframework.beans.support.BeanDefinitionRegistry;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;

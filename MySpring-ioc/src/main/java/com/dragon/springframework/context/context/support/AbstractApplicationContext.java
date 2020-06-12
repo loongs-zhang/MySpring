@@ -31,12 +31,17 @@ public abstract class AbstractApplicationContext implements ConfigurableApplicat
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
         //为BeanFactory配置容器特性
         prepareBeanFactory(beanFactory);
-        //初始化容器事件传播器.
-        initApplicationEventMulticaster();
-        //为事件传播器注册事件监听器.
-        registerListeners();
-        //把非延迟加载的类提前初始化
-        finishBeanFactoryInitialization(beanFactory);
+        try {
+            //初始化容器事件传播器.
+            initApplicationEventMulticaster();
+            //为事件传播器注册事件监听器.
+            registerListeners();
+            //把非延迟加载的类提前初始化
+            finishBeanFactoryInitialization(beanFactory);
+        } catch (Exception e) {
+            //初始化失败，销毁所有已创建的Bean
+            destroyBeans();
+        }
     }
 
     private void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
@@ -62,6 +67,10 @@ public abstract class AbstractApplicationContext implements ConfigurableApplicat
 
     private void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) throws Exception {
         beanFactory.preInstantiateSingletons();
+    }
+
+    private void destroyBeans() {
+        getBeanFactory().destroySingletons();
     }
 
     @Override

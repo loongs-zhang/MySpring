@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.dragon.springframework.beans.support;
+package com.dragon.springframework.beans.factory.support;
 
 /**
  * 规范Bean定义阅读器的简单接口，使用String位置参数指定加载方法

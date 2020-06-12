@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.dragon.springframework.beans.support;
+package com.dragon.springframework.beans.factory.support;
 
 import com.dragon.springframework.beans.config.BeanDefinition;
 

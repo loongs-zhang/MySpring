@@ -1,9 +1,5 @@
 package com.dragon.springframework.beans.factory.support;
 
-import com.dragon.springframework.beans.support.BeanDefinitionReader;
-import com.dragon.springframework.beans.support.BeanDefinitionRegistry;
-import com.dragon.springframework.beans.support.BeanNameGenerator;
-import com.dragon.springframework.beans.support.DefaultBeanNameGenerator;
 import lombok.Setter;
 
 /**

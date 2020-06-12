@@ -2,8 +2,8 @@ package com.dragon.springframework.context.context.support;
 
 import com.dragon.springframework.beans.config.BeanDefinition;
 import com.dragon.springframework.beans.config.ConfigurableListableBeanFactory;
+import com.dragon.springframework.beans.factory.support.BeanDefinitionRegistry;
 import com.dragon.springframework.beans.factory.support.DefaultListableBeanFactory;
-import com.dragon.springframework.beans.support.BeanDefinitionRegistry;
 
 /**
  * 通用ApplicationContext实现，它具有单个内部{@link DefaultListableBeanFactory}

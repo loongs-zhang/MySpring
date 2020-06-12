@@ -9,6 +9,7 @@ import com.dragon.springframework.beans.factory.FactoryBean;
 import com.dragon.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import com.dragon.springframework.core.StringUtils;
 
+import java.security.AccessController;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -138,7 +139,19 @@ public abstract class AbstractAutowireCapableBeanFactory extends DefaultSingleto
 
     @Override
     public void destroyBean(Object existingBean) {
+        new DisposableBeanAdapter(existingBean, this.beanPostProcessors, AccessController.getContext())
+                .destroy();
+    }
 
+    @Override
+    public void destroySingletons() {
+        super.destroySingletons();
+    }
+
+    @Override
+    protected void removeSingleton(String beanName) {
+        super.removeSingleton(beanName);
+        this.factoryBeanInstanceCache.remove(beanName);
     }
 
     /**

@@ -1,7 +1,7 @@
 package com.dragon.springframework.beans.factory.xml;
 
 import com.dragon.springframework.beans.config.BeanDefinition;
-import com.dragon.springframework.beans.support.BeanDefinitionRegistry;
+import com.dragon.springframework.beans.factory.support.BeanDefinitionRegistry;
 
 /**
  * 专门用于{@link XmlBeanDefinitionReader}。

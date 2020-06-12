@@ -1,7 +1,7 @@
 package com.dragon.springframework.beans.factory.xml;
 
 import com.dragon.springframework.beans.factory.support.AbstractBeanDefinitionReader;
-import com.dragon.springframework.beans.support.BeanDefinitionRegistry;
+import com.dragon.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
 

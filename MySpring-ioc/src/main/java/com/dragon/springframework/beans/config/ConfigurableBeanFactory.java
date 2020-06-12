@@ -27,4 +27,11 @@ public interface ConfigurableBeanFactory extends SingletonBeanRegistry, BeanFact
      */
     void addBeanPostProcessor(BeanPostProcessor beanPostProcessor);
 
+    /**
+     * 销毁该工厂中的所有单例bean，包括已注册的DisposableBean。
+     * 在工厂关闭时被调用，应该捕获并销毁在销毁过程中出现的任何异常，
+     * 而不是传播给此方法的调用者。
+     */
+    void destroySingletons();
+
 }
