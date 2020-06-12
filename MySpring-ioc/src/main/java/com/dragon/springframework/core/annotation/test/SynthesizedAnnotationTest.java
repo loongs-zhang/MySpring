@@ -1,7 +1,7 @@
 package com.dragon.springframework.core.annotation.test;
 
 import com.dragon.springframework.core.annotation.AliasFor;
-import com.dragon.springframework.core.annotation.AnnotatedElementUtils;
+import com.dragon.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -55,10 +55,10 @@ public class SynthesizedAnnotationTest {
     }
 
     public static void main(String[] args) {
-        Test1 annotation = AnnotatedElementUtils.getMergedAnnotation(Element.class, Test1.class);
+        Test1 annotation = AnnotationUtils.getMergedAnnotation(Element.class, Test1.class);
         // 虽然调用了Test2注解的test2方法，但是实际显示的是Test3注解中的test3属性声明的值
         // 则说明Test2的test2属性被覆盖了
-        Test1 annotation2 = AnnotatedElementUtils.getMergedAnnotation(Element2.class, Test1.class);
+        Test1 annotation2 = AnnotationUtils.getMergedAnnotation(Element2.class, Test1.class);
         System.out.println(annotation.hashCode());
         System.out.println(annotation.toString());
         System.out.println(annotation.equals(annotation2));

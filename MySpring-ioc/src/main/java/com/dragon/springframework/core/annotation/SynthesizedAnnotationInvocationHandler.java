@@ -4,9 +4,9 @@ import com.dragon.springframework.core.Assert;
 import com.dragon.springframework.core.ObjectUtils;
 import com.dragon.springframework.core.ReflectionUtils;
 import com.dragon.springframework.core.StringUtils;
-import com.dragon.springframework.core.proxy.jdk.InvocationHandler;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -14,20 +14,19 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * {@link InvocationHandler} for an {@link Annotation} that Spring has
- * <em>synthesized</em> (i.e., wrapped in a dynamic proxy) with additional
- * functionality.
+ * 组合注解代理处理器。
  *
- * @author Sam Brannen
- * @since 4.2
+ * @author SuccessZhang
+ * @date 2020/06/10
  */
+@SuppressWarnings("all")
 class SynthesizedAnnotationInvocationHandler implements InvocationHandler {
 
-    private final AnnotationAttributeExtractor<?> attributeExtractor;
+    private final AnnotationAttributeExtractor attributeExtractor;
 
     private final Map<String, Object> valueCache = new ConcurrentHashMap<>(8);
 
-    SynthesizedAnnotationInvocationHandler(AnnotationAttributeExtractor<?> attributeExtractor) {
+    SynthesizedAnnotationInvocationHandler(AnnotationAttributeExtractor attributeExtractor) {
         Assert.notNull(attributeExtractor, "AnnotationAttributeExtractor must not be null");
         this.attributeExtractor = attributeExtractor;
     }
@@ -61,28 +60,27 @@ class SynthesizedAnnotationInvocationHandler implements InvocationHandler {
         String attributeName = attributeMethod.getName();
         Object value = this.valueCache.get(attributeName);
         if (value == null) {
-            value = this.attributeExtractor.getAttributeValue(attributeMethod);
+            value = this.attributeExtractor.getAttributeValue(attributeName);
             if (value == null) {
-                String msg = String.format("%s returned null for attribute name [%s] from attribute source [%s]",
-                        this.attributeExtractor.getClass().getName(), attributeName, this.attributeExtractor.getSource());
+                String msg = String.format("%s returned null for attribute name [%s]",
+                        this.attributeExtractor.getClass().getName(), attributeName);
                 throw new IllegalStateException(msg);
             }
             if (value instanceof Annotation) {
-                value = AnnotationUtils.synthesizeAnnotation((Annotation) value, this.attributeExtractor.getAnnotatedElement());
+                value = AnnotationUtils.getMergedAnnotation(this.attributeExtractor.getAnnotatedElement(), ((Annotation) value).annotationType());
             } else if (value instanceof Annotation[]) {
-                value = AnnotationUtils.synthesizeAnnotationArray((Annotation[]) value, this.attributeExtractor.getAnnotatedElement());
+                value = AnnotationUtils.synthesizeAnnotationArray(this.attributeExtractor.getAnnotatedElement(), (Annotation[]) value);
             }
             this.valueCache.put(attributeName, value);
         }
-        if (value.getClass().isArray()) {
+        if (value != null && value.getClass().isArray()) {
             value = cloneArray(value);
         }
         return value;
     }
 
     /**
-     * Clone the provided array, ensuring that original
-     * component type is retained.
+     * 克隆提供的数组，确保保留原始组件类型。
      */
     private Object cloneArray(Object array) {
         if (array instanceof boolean[]) {
@@ -113,8 +111,8 @@ class SynthesizedAnnotationInvocationHandler implements InvocationHandler {
     }
 
     /**
-     * See {@link Annotation#equals(Object)} for a
-     * definition of the required algorithm.
+     * 代理组合注解equals方法
+     * {@link Annotation#equals(Object)}
      */
     private boolean annotationEquals(Object other) {
         if (this == other) {
@@ -134,8 +132,8 @@ class SynthesizedAnnotationInvocationHandler implements InvocationHandler {
     }
 
     /**
-     * See {@link Annotation#hashCode()} for a
-     * definition of the required algorithm.
+     * 代理组合注解hashCode方法
+     * {@link Annotation#hashCode()}
      */
     private int annotationHashCode() {
         int result = 0;
@@ -152,12 +150,6 @@ class SynthesizedAnnotationInvocationHandler implements InvocationHandler {
         return result;
     }
 
-    /**
-     * WARNING: we can NOT use any of the {@code nullSafeHashCode()} methods
-     * in Spring's {@link ObjectUtils} because those hash code generation
-     * algorithms do not comply with the requirements specified in
-     * {@link Annotation#hashCode()}.
-     */
     private int hashCodeForArray(Object array) {
         if (array instanceof boolean[]) {
             return Arrays.hashCode((boolean[]) array);
@@ -187,7 +179,8 @@ class SynthesizedAnnotationInvocationHandler implements InvocationHandler {
     }
 
     /**
-     * See {@link Annotation#toString()} for guidelines on the recommended format.
+     * 代理组合注解toString方法
+     * {@link Annotation#toString()}
      */
     private String annotationToString() {
         StringBuilder sb = new StringBuilder("@").append(annotationType().getName()).append("(");

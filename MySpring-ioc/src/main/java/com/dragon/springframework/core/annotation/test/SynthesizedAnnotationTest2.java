@@ -1,7 +1,7 @@
 package com.dragon.springframework.core.annotation.test;
 
 import com.dragon.springframework.core.annotation.AliasFor;
-import com.dragon.springframework.core.annotation.AnnotatedElementUtils;
+import com.dragon.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -35,7 +35,7 @@ public class SynthesizedAnnotationTest2 {
     }
 
     public static void main(String[] args) {
-        Test1 annotation2 = AnnotatedElementUtils.getMergedAnnotation(Element2.class, Test1.class);
+        Test1 annotation2 = AnnotationUtils.getMergedAnnotation(Element2.class, Test1.class);
         System.out.println("test1->" + annotation2.test1());
         System.out.println("test12->" + annotation2.test12());
     }

@@ -17,48 +17,29 @@
 package com.dragon.springframework.core.annotation;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
+import java.lang.reflect.AnnotatedElement;
 
 /**
- * An {@code AnnotationAttributeExtractor} is responsible for
- * {@linkplain #getAttributeValue extracting} annotation attribute values
- * from an underlying {@linkplain #getSource source} such as an
- * {@code Annotation} or a {@code Map}.
+ * 负责从基础源提取属性值的属性提取器。
  *
- * @param <S> the type of source supported by this extractor
- * @author Sam Brannen
- * @see SynthesizedAnnotationInvocationHandler
- * @since 4.2
+ * @author SuccessZhang
+ * @date 2020/06/11
  */
-interface AnnotationAttributeExtractor<S> {
+interface AnnotationAttributeExtractor {
 
     /**
-     * Get the type of annotation that this extractor extracts attribute
-     * values for.
+     * 获取被提取属性的注解的类型。
      */
     Class<? extends Annotation> getAnnotationType();
 
     /**
-     * Get the element that is annotated with an annotation of the annotation
-     * type supported by this extractor.
-     *
-     * @return the annotated element, or {@code null} if unknown
+     * 获取被注解标注的元素。
      */
-    Object getAnnotatedElement();
+    AnnotatedElement getAnnotatedElement();
 
     /**
-     * Get the underlying source of annotation attributes.
+     * 获取属性值。
      */
-    S getSource();
-
-    /**
-     * Get the attribute value from the underlying {@linkplain #getSource source}
-     * that corresponds to the supplied attribute method.
-     *
-     * @param attributeMethod an attribute method from the annotation type
-     *                        supported by this extractor
-     * @return the value of the annotation attribute
-     */
-    Object getAttributeValue(Method attributeMethod);
+    Object getAttributeValue(String attribute);
 
 }

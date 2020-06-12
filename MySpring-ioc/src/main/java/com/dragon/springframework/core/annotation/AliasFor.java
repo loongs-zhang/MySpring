@@ -24,11 +24,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * {@code @AliasFor} is an annotation that is used to declare aliases for
- * annotation attributes.
+ * 一个用于为注解属性声明别名的注解。
  *
- * @author Sam Brannen
- * @since 4.2
+ * @author SuccessZhang
+ * @date 2020/06/11
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
@@ -36,26 +35,20 @@ import java.lang.annotation.Target;
 public @interface AliasFor {
 
     /**
-     * Alias for {@link #attribute}.
-     * <p>Intended to be used instead of {@link #attribute} when {@link #annotation}
-     * is not declared &mdash; for example: {@code @AliasFor("value")} instead of
-     * {@code @AliasFor(attribute = "value")}.
+     * attribute属性的别名。
      */
     @AliasFor("attribute")
     String value() default "";
 
     /**
-     * The name of the attribute that <em>this</em> attribute is an alias for.
-     *
-     * @see #value
+     * value属性的别名。
      */
     @AliasFor("value")
     String attribute() default "";
 
     /**
-     * The type of annotation in which the aliased {@link #attribute} is declared.
-     * <p>Defaults to {@link Annotation}, implying that the aliased attribute is
-     * declared in the same annotation as <em>this</em> attribute.
+     * 别名的注解类型，默认为{@link Annotation}，
+     * 表示别名属性是在与原属性相同的注解中声明的。
      */
     Class<? extends Annotation> annotation() default Annotation.class;
 

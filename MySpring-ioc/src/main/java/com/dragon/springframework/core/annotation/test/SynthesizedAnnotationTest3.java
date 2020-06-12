@@ -1,7 +1,7 @@
 package com.dragon.springframework.core.annotation.test;
 
 import com.dragon.springframework.core.annotation.AliasFor;
-import com.dragon.springframework.core.annotation.AnnotatedElementUtils;
+import com.dragon.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -18,10 +18,10 @@ public class SynthesizedAnnotationTest3 {
     @Retention(RetentionPolicy.RUNTIME)
     public @interface Test1 {
 
-        @AliasFor(annotation = Test1.class, attribute = "test12")
+        @AliasFor("test12")
         String test1() default "test1";
 
-        @AliasFor(annotation = Test1.class, attribute = "test1")
+        @AliasFor("test1")
         String test12() default "test1";
 
     }
@@ -30,8 +30,8 @@ public class SynthesizedAnnotationTest3 {
     @Retention(RetentionPolicy.RUNTIME)
     @Test1
     public @interface Test2 {
-        @AliasFor(annotation = Test1.class, attribute = "test1")
-        String test2() default "test2";
+        @AliasFor(annotation = Test1.class)
+        String test1() default "test2";
     }
 
     @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.TYPE})
@@ -43,7 +43,7 @@ public class SynthesizedAnnotationTest3 {
          * annotation属性声明的注解类必须存在于该注解的元注解上
          * attribute属性声明的值必须存在于Test2注解属性方法中(即Test2注解的test2方法)
          */
-        @AliasFor(annotation = Test2.class, attribute = "test2")
+        @AliasFor(annotation = Test2.class, attribute = "test1")
         String test3() default "test3";
     }
 
@@ -61,15 +61,15 @@ public class SynthesizedAnnotationTest3 {
     }
 
     public static void main(String[] args) {
-        Test1 annotation = AnnotatedElementUtils.getMergedAnnotation(Element.class, Test1.class);
+        Test1 annotation = AnnotationUtils.getMergedAnnotation(Element.class, Test1.class);
         // 虽然调用了Test2注解的test2方法，但是实际显示的是Test3注解中的test3属性声明的值
         // 则说明Test2的test2属性被覆盖了
-        Test1 annotation2 = AnnotatedElementUtils.getMergedAnnotation(Element2.class, Test1.class);
+        Test1 annotation2 = AnnotationUtils.getMergedAnnotation(Element2.class, Test1.class);
         System.out.println(annotation.hashCode());
         System.out.println(annotation.toString());
         System.out.println(annotation.equals(annotation2));
         System.out.println(annotation.annotationType());
-        System.out.println("test1->" + annotation2.test1());
-        System.out.println("test12->" + annotation2.test12());
+        System.out.println("test1->" + annotation.test1());
+        System.out.println("test12->" + annotation.test12());
     }
 }
