@@ -5,16 +5,11 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @author meilin.huang
- * @version 1.0
- * @date 2019-03-27 10:04 AM
+ * @author SuccessZhang
+ * @date 2020/06/12
  */
 public class ReflectionUtils {
 
@@ -31,7 +26,7 @@ public class ReflectionUtils {
      * @param annotation 注解实例
      * @return 注解K-V字段Map
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "unused"})
     public static Map<String, Object> getAnnotationMemberValues(Object annotation) throws Exception {
         InvocationHandler invocationHandler = Proxy.getInvocationHandler(annotation);
         Field values = invocationHandler.getClass().getDeclaredField("memberValues");
@@ -60,7 +55,7 @@ public class ReflectionUtils {
      */
     public static Object invokeMethod(Method method, Object target, Object... args) {
         try {
-            method.setAccessible(true);
+            makeAccessible(method);
             return method.invoke(target, args);
         } catch (Exception ex) {
             throw new IllegalStateException(String.format("执行%s.%s()方法错误!"
@@ -99,101 +94,6 @@ public class ReflectionUtils {
         return "toString".equals(method.getName()) && method.getParameterCount() == 0;
     }
 
-    private static final Method[] NO_METHODS = {};
-
-    private static final Field[] NO_FIELDS = {};
-
-    /**
-     * Cache for {@link Class#getDeclaredMethods()} plus equivalent default methods
-     * from Java 8 based interfaces, allowing for fast iteration.
-     */
-    private static final Map<Class<?>, Method[]> declaredMethodsCache = new ConcurrentHashMap<>(256);
-
-    /**
-     * Cache for {@link Class#getDeclaredFields()}, allowing for fast iteration.
-     */
-    private static final Map<Class<?>, Field[]> declaredFieldsCache = new ConcurrentHashMap<>(256);
-
-    /**
-     * Attempt to find a {@link Field field} on the supplied {@link Class} with the
-     * supplied {@code name}. Searches all superclasses up to {@link Object}.
-     *
-     * @param clazz the class to introspect
-     * @param name  the name of the field
-     * @return the corresponding Field object, or {@code null} if not found
-     */
-    public static Field findField(Class<?> clazz, String name) {
-        return findField(clazz, name, null);
-    }
-
-    /**
-     * Attempt to find a {@link Field field} on the supplied {@link Class} with the
-     * supplied {@code name} and/or {@link Class type}. Searches all superclasses
-     * up to {@link Object}.
-     *
-     * @param clazz the class to introspect
-     * @param name  the name of the field (may be {@code null} if type is specified)
-     * @param type  the type of the field (may be {@code null} if name is specified)
-     * @return the corresponding Field object, or {@code null} if not found
-     */
-    public static Field findField(Class<?> clazz, String name, Class<?> type) {
-        Assert.notNull(clazz, "Class must not be null");
-        Assert.isTrue(name != null || type != null, "Either name or type of the field must be specified");
-        Class<?> searchType = clazz;
-        while (Object.class != searchType && searchType != null) {
-            Field[] fields = getDeclaredFields(searchType);
-            for (Field field : fields) {
-                if ((name == null || name.equals(field.getName())) &&
-                        (type == null || type.equals(field.getType()))) {
-                    return field;
-                }
-            }
-            searchType = searchType.getSuperclass();
-        }
-        return null;
-    }
-
-    /**
-     * Attempt to find a {@link Method} on the supplied class with the supplied name
-     * and no parameters. Searches all superclasses up to {@code Object}.
-     * <p>Returns {@code null} if no {@link Method} can be found.
-     *
-     * @param clazz the class to introspect
-     * @param name  the name of the method
-     * @return the Method object, or {@code null} if none found
-     */
-    public static Method findMethod(Class<?> clazz, String name) {
-        return findMethod(clazz, name, new Class<?>[0]);
-    }
-
-    /**
-     * Attempt to find a {@link Method} on the supplied class with the supplied name
-     * and parameter types. Searches all superclasses up to {@code Object}.
-     * <p>Returns {@code null} if no {@link Method} can be found.
-     *
-     * @param clazz      the class to introspect
-     * @param name       the name of the method
-     * @param paramTypes the parameter types of the method
-     *                   (may be {@code null} to indicate any signature)
-     * @return the Method object, or {@code null} if none found
-     */
-    public static Method findMethod(Class<?> clazz, String name, Class<?>... paramTypes) {
-        Assert.notNull(clazz, "Class must not be null");
-        Assert.notNull(name, "Method name must not be null");
-        Class<?> searchType = clazz;
-        while (searchType != null) {
-            Method[] methods = (searchType.isInterface() ? searchType.getMethods() : getDeclaredMethods(searchType));
-            for (Method method : methods) {
-                if (name.equals(method.getName()) &&
-                        (paramTypes == null || Arrays.equals(paramTypes, method.getParameterTypes()))) {
-                    return method;
-                }
-            }
-            searchType = searchType.getSuperclass();
-        }
-        return null;
-    }
-
     /**
      * Make the given method accessible, explicitly setting it accessible if
      * necessary. The {@code setAccessible(true)} method is only called
@@ -210,80 +110,4 @@ public class ReflectionUtils {
         }
     }
 
-    /**
-     * This variant retrieves {@link Class#getDeclaredMethods()} from a local cache
-     * in order to avoid the JVM's SecurityManager check and defensive array copying.
-     * In addition, it also includes Java 8 default methods from locally implemented
-     * interfaces, since those are effectively to be treated just like declared methods.
-     *
-     * @param clazz the class to introspect
-     * @return the cached array of methods
-     * @throws IllegalStateException if introspection fails
-     * @see Class#getDeclaredMethods()
-     */
-    private static Method[] getDeclaredMethods(Class<?> clazz) {
-        Assert.notNull(clazz, "Class must not be null");
-        Method[] result = declaredMethodsCache.get(clazz);
-        if (result == null) {
-            try {
-                Method[] declaredMethods = clazz.getDeclaredMethods();
-                List<Method> defaultMethods = findConcreteMethodsOnInterfaces(clazz);
-                if (defaultMethods != null) {
-                    result = new Method[declaredMethods.length + defaultMethods.size()];
-                    System.arraycopy(declaredMethods, 0, result, 0, declaredMethods.length);
-                    int index = declaredMethods.length;
-                    for (Method defaultMethod : defaultMethods) {
-                        result[index] = defaultMethod;
-                        index++;
-                    }
-                } else {
-                    result = declaredMethods;
-                }
-                declaredMethodsCache.put(clazz, (result.length == 0 ? NO_METHODS : result));
-            } catch (Throwable ex) {
-                throw new IllegalStateException("Failed to introspect Class [" + clazz.getName() +
-                        "] from ClassLoader [" + clazz.getClassLoader() + "]", ex);
-            }
-        }
-        return result;
-    }
-
-    private static List<Method> findConcreteMethodsOnInterfaces(Class<?> clazz) {
-        List<Method> result = null;
-        for (Class<?> ifc : clazz.getInterfaces()) {
-            for (Method ifcMethod : ifc.getMethods()) {
-                if (!Modifier.isAbstract(ifcMethod.getModifiers())) {
-                    if (result == null) {
-                        result = new LinkedList<>();
-                    }
-                    result.add(ifcMethod);
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * This variant retrieves {@link Class#getDeclaredFields()} from a local cache
-     * in order to avoid the JVM's SecurityManager check and defensive array copying.
-     *
-     * @param clazz the class to introspect
-     * @return the cached array of fields
-     * @throws IllegalStateException if introspection fails
-     * @see Class#getDeclaredFields()
-     */
-    private static Field[] getDeclaredFields(Class<?> clazz) {
-        Assert.notNull(clazz, "Class must not be null");
-        Field[] result = declaredFieldsCache.get(clazz);
-        if (result == null) {
-            try {
-                result = clazz.getDeclaredFields();
-                declaredFieldsCache.put(clazz, (result.length == 0 ? NO_FIELDS : result));
-            } catch (Throwable ex) {
-                throw new IllegalStateException("Failed to introspect Class [" + clazz.getName() +
-                        "] from ClassLoader [" + clazz.getClassLoader() + "]", ex);
-            }
-        }
-        return result;
-    }
 }

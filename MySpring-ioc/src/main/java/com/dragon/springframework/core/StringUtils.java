@@ -4,6 +4,7 @@ package com.dragon.springframework.core;
  * @author SuccessZhang
  * @date 2020/06/07
  */
+@SuppressWarnings("unused")
 public class StringUtils {
 
     public static String lowerFirstCase(String simpleName) {

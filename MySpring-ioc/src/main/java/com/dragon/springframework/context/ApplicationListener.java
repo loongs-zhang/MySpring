@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2015 the original author or authors.
+ * Copyright 2002-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-package com.dragon.springframework.core.annotation;
+package com.dragon.springframework.context;
+
+import java.util.EventListener;
 
 /**
- * Marker interface implemented by synthesized annotation proxies.
+ * 基于观察者设计模式的标准{@code java.util.EventListener}接口，
+ * 由应用程序事件侦听器实现。
  *
- * <p>Used to detect whether an annotation has already been synthesized.
- *
- * @author Sam Brannen
- * @since 4.2
+ * @author SuccessZhang
+ * @date 2020/06/12
  */
-public interface SynthesizedAnnotation {
+@FunctionalInterface
+public interface ApplicationListener<E extends ApplicationEvent> extends EventListener {
+
+    /**
+     * 处理应用程序事件。
+     */
+    void onApplicationEvent(E event);
+
 }
