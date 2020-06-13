@@ -33,6 +33,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
         String fileName = location.replace(CLASSPATH_URL_PREFIX, "")
                 .replace(CLASSPATH_ALL_URL_PREFIX, "");
         if (fileName.endsWith(XML)) {
+            int countBefore = getRegistry().getBeanDefinitionCount();
             //加载配置文件
             try (InputStream inputStream = getBeanClassLoader().getResourceAsStream(fileName)) {
                 SAXReader xmlReader = new SAXReader();
@@ -40,7 +41,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
                 //将bean的配置信息注册到伪IOC容器
                 documentReader.registerBeanDefinitions(document, new XmlReaderContext(this));
             }
+            return getRegistry().getBeanDefinitionCount() - countBefore;
         }
-        return getRegistry().getBeanDefinitionCount();
+        return 0;
     }
 }
