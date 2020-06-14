@@ -1,6 +1,5 @@
 package com.dragon.springframework.beans.factory.xml;
 
-import com.dragon.springframework.beans.config.BeanDefinition;
 import com.dragon.springframework.beans.factory.support.BeanDefinitionRegistry;
 
 /**
@@ -38,19 +37,4 @@ public class XmlReaderContext {
         return this.reader.getBeanClassLoader();
     }
 
-    /**
-     * 调用给定bean定义的bean名称生成器。
-     */
-    public String generateBeanName(BeanDefinition beanDefinition) {
-        return this.reader.getBeanNameGenerator().generateBeanName(beanDefinition, getRegistry());
-    }
-
-    /**
-     * 调用给定bean定义的bean名称生成器，并在生成的名称下注册bean定义。
-     */
-    public String registerWithGeneratedName(BeanDefinition beanDefinition) throws Exception {
-        String generatedName = generateBeanName(beanDefinition);
-        getRegistry().registerBeanDefinition(generatedName, beanDefinition);
-        return generatedName;
-    }
 }

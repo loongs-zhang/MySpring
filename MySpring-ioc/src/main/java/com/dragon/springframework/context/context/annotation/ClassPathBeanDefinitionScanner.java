@@ -2,6 +2,7 @@ package com.dragon.springframework.context.context.annotation;
 
 import com.dragon.springframework.beans.config.BeanDefinition;
 import com.dragon.springframework.beans.config.ConfigurableBeanFactory;
+import com.dragon.springframework.beans.factory.support.BeanDefinitionRegistry;
 import com.dragon.springframework.context.stereotype.Component;
 import com.dragon.springframework.core.StringUtils;
 import com.dragon.springframework.core.annotation.AnnotationUtils;
@@ -19,6 +20,12 @@ import java.util.Set;
  * @date 2020/06/08
  */
 public class ClassPathBeanDefinitionScanner {
+
+    private final BeanDefinitionRegistry registry;
+
+    public ClassPathBeanDefinitionScanner(BeanDefinitionRegistry registry) {
+        this.registry = registry;
+    }
 
     public Set<BeanDefinition> doScan(String... basePackages) {
         Set<BeanDefinition> beanDefinitions = new LinkedHashSet<>();
@@ -61,15 +68,19 @@ public class ClassPathBeanDefinitionScanner {
                         }
                         BeanDefinition beanDefinition = doCreateBeanDefinition(fullClassName, beanClass, factoryBeanName, autowire, initMethod, destroyMethod);
                         Class<?>[] interfaces = beanClass.getInterfaces();
+                        registry.registerBeanDefinition(factoryBeanName, beanDefinition);
                         beanDefinitions.add(beanDefinition);
                         for (Class<?> i : interfaces) {
                             String interfaceName = StringUtils.lowerFirstCase(i.getSimpleName());
                             if (!"".equals(interfaceName)) {
                                 beanDefinition = doCreateBeanDefinition(fullClassName, beanClass, interfaceName, autowire, initMethod, destroyMethod);
+                                registry.registerBeanDefinition(interfaceName, beanDefinition);
                                 beanDefinitions.add(beanDefinition);
                             }
                         }
                     } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }

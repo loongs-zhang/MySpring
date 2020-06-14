@@ -16,8 +16,6 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
     @Setter
     private ClassLoader beanClassLoader = ClassLoader.getSystemClassLoader();
 
-    private BeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
-
     public AbstractBeanDefinitionReader(BeanDefinitionRegistry registry) {
         this.registry = registry;
     }
@@ -30,11 +28,6 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
     @Override
     public ClassLoader getBeanClassLoader() {
         return this.beanClassLoader;
-    }
-
-    @Override
-    public BeanNameGenerator getBeanNameGenerator() {
-        return this.beanNameGenerator;
     }
 
     @Override
