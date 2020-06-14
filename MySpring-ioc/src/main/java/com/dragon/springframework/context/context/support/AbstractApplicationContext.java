@@ -85,10 +85,6 @@ public abstract class AbstractApplicationContext implements ConfigurableApplicat
         this.applicationEventMulticaster.addApplicationListener(listener);
     }
 
-    public final void shutdownMulticaster() {
-        this.applicationEventMulticaster.shutdown();
-    }
-
     @Override
     public final AutowireCapableBeanFactory getAutowireCapableBeanFactory() throws IllegalStateException {
         return getBeanFactory();

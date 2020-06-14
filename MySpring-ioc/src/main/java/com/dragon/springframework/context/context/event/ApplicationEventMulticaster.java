@@ -63,9 +63,4 @@ public interface ApplicationEventMulticaster {
      */
     void multicastEvent(ApplicationEvent event);
 
-    /**
-     * 关闭线程池。
-     */
-    void shutdown();
-
 }

@@ -1,15 +1,15 @@
-package com.dragon.springframework.test;
+package com.example.demo;
 
-import com.dragon.springframework.beans.config.BeanDefinition;
-import com.dragon.springframework.context.context.support.GenericXmlApplicationContext;
-import com.dragon.springframework.context.stereotype.Component;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.support.GenericXmlApplicationContext;
 
 /**
+ * Spring IOC源码导读入口。
+ *
  * @author SuccessZhang
- * @date 2020/06/12
+ * @date 2020/06/14
  */
-@Component
-public class JavaBean {
+public class SimpleTest3 {
     public static void main(String[] args) throws Exception {
         GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:applicationContext.xml");
         for (String beanDefinitionName : context.getBeanDefinitionNames()) {

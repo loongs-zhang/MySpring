@@ -7,8 +7,6 @@ import com.dragon.springframework.context.ApplicationListener;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * {@link ApplicationEventMulticaster}接口的简单实现。
@@ -20,8 +18,6 @@ import java.util.concurrent.Executors;
  * @date 2020/06/12
  */
 public class SimpleApplicationEventMulticaster implements ApplicationEventMulticaster, BeanFactoryAware {
-
-    private final ExecutorService executor = Executors.newFixedThreadPool(6);
 
     private BeanFactory beanFactory;
 
@@ -79,13 +75,8 @@ public class SimpleApplicationEventMulticaster implements ApplicationEventMultic
     @SuppressWarnings("unchecked")
     public void multicastEvent(ApplicationEvent event) {
         for (ApplicationListener listener : this.applicationListeners) {
-            this.executor.execute(() -> listener.onApplicationEvent(event));
+            listener.onApplicationEvent(event);
         }
-    }
-
-    @Override
-    public void shutdown() {
-        this.executor.shutdown();
     }
 
 }
