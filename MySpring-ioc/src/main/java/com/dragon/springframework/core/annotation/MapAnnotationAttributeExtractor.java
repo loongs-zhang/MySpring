@@ -38,8 +38,6 @@ class MapAnnotationAttributeExtractor implements AnnotationAttributeExtractor {
     /**
      * 确保包含指定的注解类型中每个注解属性的非空条目，
      * 并且确保条目的类型与返回类型匹配。
-     * 如果条目是Map（可能是注解属性），则尝试从中合成注解。
-     * 类似地，如果条目是Map数组，则将尝试从这些地图合成注解数组。
      * 如果提供的映射中缺少属性，则将其设置为别名的值（如果存在别名）
      * 或属性默认值的值（如果已定义），
      * 否则将会抛出{@link IllegalArgumentException}。

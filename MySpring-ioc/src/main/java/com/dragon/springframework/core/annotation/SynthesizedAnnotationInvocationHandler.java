@@ -4,9 +4,9 @@ import com.dragon.springframework.core.Assert;
 import com.dragon.springframework.core.ObjectUtils;
 import com.dragon.springframework.core.ReflectionUtils;
 import com.dragon.springframework.core.StringUtils;
+import com.dragon.springframework.core.proxy.jdk.InvocationHandler;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -131,25 +131,6 @@ class SynthesizedAnnotationInvocationHandler implements InvocationHandler {
         return true;
     }
 
-    /**
-     * 代理组合注解hashCode方法
-     * {@link Annotation#hashCode()}
-     */
-    private int annotationHashCode() {
-        int result = 0;
-        for (Method attributeMethod : AnnotationUtils.getAttributeMethods(annotationType())) {
-            Object value = getAttributeValue(attributeMethod);
-            int hashCode;
-            if (value.getClass().isArray()) {
-                hashCode = hashCodeForArray(value);
-            } else {
-                hashCode = value.hashCode();
-            }
-            result += (127 * attributeMethod.getName().hashCode()) ^ hashCode;
-        }
-        return result;
-    }
-
     private int hashCodeForArray(Object array) {
         if (array instanceof boolean[]) {
             return Arrays.hashCode((boolean[]) array);
@@ -176,6 +157,25 @@ class SynthesizedAnnotationInvocationHandler implements InvocationHandler {
             return Arrays.hashCode((short[]) array);
         }
         return Arrays.hashCode((Object[]) array);
+    }
+
+    /**
+     * 代理组合注解hashCode方法
+     * {@link Annotation#hashCode()}
+     */
+    private int annotationHashCode() {
+        int result = 0;
+        for (Method attributeMethod : AnnotationUtils.getAttributeMethods(annotationType())) {
+            Object value = getAttributeValue(attributeMethod);
+            int hashCode;
+            if (value.getClass().isArray()) {
+                hashCode = hashCodeForArray(value);
+            } else {
+                hashCode = value.hashCode();
+            }
+            result += (127 * attributeMethod.getName().hashCode()) ^ hashCode;
+        }
+        return result;
     }
 
     /**

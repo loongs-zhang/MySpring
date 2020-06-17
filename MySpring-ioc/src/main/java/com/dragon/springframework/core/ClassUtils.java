@@ -26,14 +26,14 @@ import java.util.jar.JarFile;
 public class ClassUtils {
 
     /**
-     * Map with primitive wrapper type as key and corresponding primitive
-     * type as value, for example: Integer.class -> int.class.
+     * 使用原始包装器类型作为键并使用对应的原始类型
+     * 作为值的映射，例如Integer.class-> int.class。
      */
     private static final Map<Class<?>, Class<?>> primitiveWrapperTypeMap = new IdentityHashMap<>(8);
 
     /**
-     * Map with primitive type as key and corresponding wrapper
-     * type as value, for example: int.class -> Integer.class.
+     * 以原始类型为键，对应的包装器类型为值的映射，
+     * 例如int.class-> Integer.class。
      */
     private static final Map<Class<?>, Class<?>> primitiveTypeToWrapperMap = new IdentityHashMap<>(8);
 
@@ -50,13 +50,7 @@ public class ClassUtils {
     }
 
     /**
-     * Check if the right-hand side type may be assigned to the left-hand side
-     * type, assuming setting by reflection. Considers primitive wrapper
-     * classes as assignable to the corresponding primitive types.
-     *
-     * @param lhsType the target type
-     * @param rhsType the value type that should be assigned to the target type
-     * @return if the target type is assignable from the value type
+     * 检查是否可以将右侧类型指定为左侧类型。
      */
     public static boolean isAssignable(Class<?> lhsType, Class<?> rhsType) {
         Assert.notNull(lhsType, "Left-hand side type must not be null");

@@ -44,7 +44,10 @@ public class StringUtils {
         return false;
     }
 
-    public static String arrayToDelimitedString(Object[] arr, String delim) {
+    /**
+     * 将数组转换为指定“界限”的字符串。
+     */
+    public static String arrayToDelimitedString(Object[] arr, String delimit) {
         if (ObjectUtils.isEmpty(arr)) {
             return "";
         }
@@ -55,7 +58,7 @@ public class StringUtils {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < arr.length; i++) {
             if (i > 0) {
-                sb.append(delim);
+                sb.append(delimit);
             }
             sb.append(arr[i]);
         }

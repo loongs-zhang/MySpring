@@ -3,13 +3,13 @@ package com.dragon.springframework.core.annotation;
 import com.dragon.springframework.core.Assert;
 import com.dragon.springframework.core.ReflectionUtils;
 import com.dragon.springframework.core.StringUtils;
+import com.dragon.springframework.core.proxy.jdk.InvocationHandler;
+import com.dragon.springframework.core.proxy.jdk.Proxy;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,14 +28,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class AnnotationUtils {
 
-    private static final Map<Class<? extends Annotation>, List<Method>> ATTRIBUTE_METHODS_CACHE =
-            new ConcurrentHashMap<>(256);
+    private static final Map<Class<? extends Annotation>, List<Method>> ATTRIBUTE_METHODS_CACHE = new ConcurrentHashMap<>(256);
 
-    private static final Map<Class<? extends Annotation>, Map<String, List<String>>> ATTRIBUTE_ALIASES_CACHE =
-            new ConcurrentHashMap<>(256);
+    private static final Map<Class<? extends Annotation>, Map<String, List<String>>> ATTRIBUTE_ALIASES_CACHE = new ConcurrentHashMap<>(256);
 
     /**
      * 获取指定元素上的指定的、合并后的注解。
+     * 原本存在于Spring源码AnnotatedElementUtils中，作者进行了合并。
      */
     public static <A extends Annotation> A getMergedAnnotation(AnnotatedElement element, Class<A> annotationType) {
         Assert.notNull(annotationType, "'annotationType' must not be null");
@@ -47,8 +46,12 @@ public class AnnotationUtils {
         return synthesizeAnnotation(attributes, annotationType, element);
     }
 
-    public static <A extends Annotation> Map<String, Object> getMergedAnnotationAttributes(
-            AnnotatedElement element, Class<A> targetAnnotationType) {
+    /**
+     * 获取指定元素上的指定的、合并后的注解的属性。
+     * 原本存在于Spring源码AnnotatedElementUtils中，
+     * 作者采用了与Spring略微不同的实现方式，使得读者更容易理解。
+     */
+    public static <A extends Annotation> Map<String, Object> getMergedAnnotationAttributes(AnnotatedElement element, Class<A> targetAnnotationType) {
         Set<Annotation> visited = new HashSet<>();
         A target = findAnnotation(element, targetAnnotationType, visited);
         if (target == null) {
@@ -96,125 +99,6 @@ public class AnnotationUtils {
         return attributes;
     }
 
-    /**
-     * 处理同一注解中不同属性互为别名的情况。
-     */
-    private static void handleForEachOtherSituation(Map<String, Object> attributes, Class<? extends Annotation> targetType, Method attribute, Object value) {
-        String attributeOverrideName = getAttributeOverrideName(attribute, targetType);
-        if (attributeOverrideName == null) {
-            return;
-        }
-        attributes.put(attributeOverrideName, value);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <A extends Annotation> A synthesizeAnnotation(Map<String, Object> attributes,
-                                                                Class<A> annotationType,
-                                                                AnnotatedElement annotatedElement) {
-        Assert.notNull(attributes, "'attributes' must not be null");
-        Assert.notNull(annotationType, "'annotationType' must not be null");
-        MapAnnotationAttributeExtractor attributeExtractor =
-                new MapAnnotationAttributeExtractor(annotationType, annotatedElement, attributes);
-        InvocationHandler handler = new SynthesizedAnnotationInvocationHandler(attributeExtractor);
-        return (A) Proxy.newProxyInstance(annotationType.getClassLoader(),
-                new Class<?>[]{annotationType}, handler);
-    }
-
-    static Annotation[] synthesizeAnnotationArray(
-            AnnotatedElement annotatedElement, Annotation[] annotations) {
-        Annotation[] synthesized = (Annotation[]) Array.newInstance(
-                annotations.getClass().getComponentType(), annotations.length);
-        for (int i = 0; i < annotations.length; i++) {
-            synthesized[i] = getMergedAnnotation(annotatedElement, annotations[i].annotationType());
-        }
-        return synthesized;
-    }
-
-    @SuppressWarnings("unchecked")
-    static <A extends Annotation> A[] synthesizeAnnotationArray(Map<String, Object>[] maps, Class<A> annotationType) {
-        Assert.notNull(annotationType, "'annotationType' must not be null");
-        if (maps == null) {
-            return null;
-        }
-        A[] synthesized = (A[]) Array.newInstance(annotationType, maps.length);
-        for (int i = 0; i < maps.length; i++) {
-            synthesized[i] = synthesizeAnnotation(maps[i], annotationType, null);
-        }
-        return synthesized;
-    }
-
-    /**
-     * 获取通过{@link AliasFor}配置的覆盖属性的名称。
-     */
-    public static String getAttributeOverrideName(Method attribute, Class<? extends Annotation> metaAnnotationType) {
-        Assert.notNull(attribute, "attribute must not be null");
-        Assert.notNull(metaAnnotationType, "metaAnnotationType must not be null");
-        Assert.isTrue(Annotation.class != metaAnnotationType,
-                "metaAnnotationType must not be [java.lang.annotation.Annotation]");
-        AliasDescriptor descriptor = AliasDescriptor.from(attribute);
-        return (descriptor != null ? descriptor.getAttributeOverrideName(metaAnnotationType) : null);
-    }
-
-    static Map<String, List<String>> getAttributeAliasMap(Class<? extends Annotation> annotationType) {
-        if (annotationType == null) {
-            return Collections.emptyMap();
-        }
-        Map<String, List<String>> map = ATTRIBUTE_ALIASES_CACHE.get(annotationType);
-        if (map == null) {
-            map = new LinkedHashMap<>();
-            for (Method attribute : getAttributeMethods(annotationType)) {
-                AliasDescriptor descriptor = AliasDescriptor.from(attribute);
-                if (descriptor == null) {
-                    continue;
-                }
-                List<String> aliasNames = descriptor.getAttributeAliasNames();
-                if (!aliasNames.isEmpty()) {
-                    map.put(attribute.getName(), aliasNames);
-                }
-            }
-            ATTRIBUTE_ALIASES_CACHE.put(annotationType, map);
-        }
-        return map;
-    }
-
-    public static boolean isInJavaLangAnnotationPackage(Class<? extends Annotation> annotationType) {
-        return (annotationType != null && annotationType.getName().startsWith("java.lang.annotation"));
-    }
-
-    public static Object getDefaultValue(
-            Class<? extends Annotation> annotationType, String attributeName) {
-        if (annotationType == null || !StringUtils.hasText(attributeName)) {
-            return null;
-        }
-        try {
-            return annotationType.getDeclaredMethod(attributeName).getDefaultValue();
-        } catch (Throwable ex) {
-            return null;
-        }
-    }
-
-    public static boolean isAnnotationMetaPresent(AnnotatedElement annotatedElement,
-                                                  Class<? extends Annotation> metaAnnotationType) {
-        Assert.notNull(annotatedElement, "Annotation type must not be null");
-        if (metaAnnotationType == null) {
-            return false;
-        }
-        Boolean metaPresent = Boolean.FALSE;
-        if (findAnnotation(annotatedElement, metaAnnotationType) != null) {
-            metaPresent = Boolean.TRUE;
-        }
-        return metaPresent;
-    }
-
-    public static <A extends Annotation> A findAnnotation(
-            AnnotatedElement annotatedElement, Class<A> annotationType) {
-        Assert.notNull(annotatedElement, "Class must not be null");
-        if (annotationType == null) {
-            return null;
-        }
-        return findAnnotation(annotatedElement, annotationType, new HashSet<>());
-    }
-
     private static <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement,
                                                            Class<A> annotationType,
                                                            Set<Annotation> visited) {
@@ -251,6 +135,161 @@ public class AnnotationUtils {
         return null;
     }
 
+    /**
+     * 处理同一注解中不同属性互为别名的情况。
+     */
+    private static void handleForEachOtherSituation(Map<String, Object> attributes, Class<? extends Annotation> targetType, Method attribute, Object value) {
+        String attributeOverrideName = getAttributeOverrideName(attribute, targetType);
+        if (attributeOverrideName == null) {
+            return;
+        }
+        attributes.put(attributeOverrideName, value);
+    }
+
+    /**
+     * 用动态代理实现组合注解。
+     */
+    @SuppressWarnings("unchecked")
+    public static <A extends Annotation> A synthesizeAnnotation(Map<String, Object> attributes,
+                                                                Class<A> annotationType,
+                                                                AnnotatedElement annotatedElement) {
+        Assert.notNull(attributes, "'attributes' must not be null");
+        Assert.notNull(annotationType, "'annotationType' must not be null");
+        MapAnnotationAttributeExtractor attributeExtractor =
+                new MapAnnotationAttributeExtractor(annotationType, annotatedElement, attributes);
+        InvocationHandler handler = new SynthesizedAnnotationInvocationHandler(attributeExtractor);
+        //还记得我们在3.7.5中自己实现的动态代理吗？这里直接拿来用啦。
+        return (A) Proxy.newProxyInstance(annotationType.getClassLoader(),
+                new Class<?>[]{annotationType}, handler);
+    }
+
+    /**
+     * 生成组合注解数组。
+     */
+    static Annotation[] synthesizeAnnotationArray(
+            AnnotatedElement annotatedElement, Annotation[] annotations) {
+        Annotation[] synthesized = (Annotation[]) Array.newInstance(
+                annotations.getClass().getComponentType(), annotations.length);
+        for (int i = 0; i < annotations.length; i++) {
+            synthesized[i] = getMergedAnnotation(annotatedElement, annotations[i].annotationType());
+        }
+        return synthesized;
+    }
+
+    /**
+     * 直接生成组合注解数组。
+     */
+    @SuppressWarnings("unchecked")
+    static <A extends Annotation> A[] synthesizeAnnotationArray(Map<String, Object>[] maps, Class<A> annotationType) {
+        Assert.notNull(annotationType, "'annotationType' must not be null");
+        if (maps == null) {
+            return null;
+        }
+        A[] synthesized = (A[]) Array.newInstance(annotationType, maps.length);
+        for (int i = 0; i < maps.length; i++) {
+            synthesized[i] = synthesizeAnnotation(maps[i], annotationType, null);
+        }
+        return synthesized;
+    }
+
+    /**
+     * 获取通过{@link AliasFor}配置的
+     * 同层次覆盖属性的名称。
+     */
+    public static String getAttributeOverrideName(Method attribute, Class<? extends Annotation> metaAnnotationType) {
+        Assert.notNull(attribute, "attribute must not be null");
+        Assert.notNull(metaAnnotationType, "metaAnnotationType must not be null");
+        Assert.isTrue(Annotation.class != metaAnnotationType,
+                "metaAnnotationType must not be [java.lang.annotation.Annotation]");
+        AliasDescriptor descriptor = AliasDescriptor.from(attribute);
+        return (descriptor != null ? descriptor.getAttributeOverrideName(metaAnnotationType) : null);
+    }
+
+    /**
+     * 获取提供的注解类型中通过{@link AliasFor}声明的所有属性别名的映射。
+     */
+    static Map<String, List<String>> getAttributeAliasMap(Class<? extends Annotation> annotationType) {
+        if (annotationType == null) {
+            return Collections.emptyMap();
+        }
+        Map<String, List<String>> map = ATTRIBUTE_ALIASES_CACHE.get(annotationType);
+        if (map == null) {
+            map = new LinkedHashMap<>();
+            for (Method attribute : getAttributeMethods(annotationType)) {
+                AliasDescriptor descriptor = AliasDescriptor.from(attribute);
+                if (descriptor == null) {
+                    continue;
+                }
+                List<String> aliasNames = descriptor.getAttributeAliasNames();
+                if (!aliasNames.isEmpty()) {
+                    map.put(attribute.getName(), aliasNames);
+                }
+            }
+            ATTRIBUTE_ALIASES_CACHE.put(annotationType, map);
+        }
+        return map;
+    }
+
+    /**
+     * 获取元注解用default关键字声明的默认值。
+     */
+    public static Object getDefaultValue(
+            Class<? extends Annotation> annotationType, String attributeName) {
+        if (annotationType == null || !StringUtils.hasText(attributeName)) {
+            return null;
+        }
+        try {
+            return annotationType.getDeclaredMethod(attributeName).getDefaultValue();
+        } catch (Throwable ex) {
+            return null;
+        }
+    }
+
+    /**
+     * 看看某注解是否属于java元注解
+     */
+    public static boolean isInJavaLangAnnotationPackage(Class<? extends Annotation> annotationType) {
+        return (annotationType != null && annotationType.getName().startsWith("java.lang.annotation"));
+    }
+
+    /**
+     * 查找AnnotatedElement上是否有指定的元注解。
+     */
+    public static boolean isAnnotationMetaPresent(AnnotatedElement annotatedElement,
+                                                  Class<? extends Annotation> metaAnnotationType) {
+        Assert.notNull(annotatedElement, "Annotation type must not be null");
+        if (metaAnnotationType == null) {
+            return false;
+        }
+        Boolean metaPresent = Boolean.FALSE;
+        if (findAnnotation(annotatedElement, metaAnnotationType) != null) {
+            metaPresent = Boolean.TRUE;
+        }
+        return metaPresent;
+    }
+
+    /**
+     * 查找AnnotatedElement上的指定元注解。
+     */
+    public static <A extends Annotation> A findAnnotation(
+            AnnotatedElement annotatedElement, Class<A> annotationType) {
+        Assert.notNull(annotatedElement, "Class must not be null");
+        if (annotationType == null) {
+            return null;
+        }
+        return findAnnotation(annotatedElement, annotationType, new HashSet<>());
+    }
+
+    /**
+     * 看看某个方法是否为注解属性方法。
+     */
+    public static boolean isAttributeMethod(Method method) {
+        return (method != null && method.getParameterCount() == 0 && method.getReturnType() != void.class);
+    }
+
+    /**
+     * 获取某个注解的所有属性方法。
+     */
     public static List<Method> getAttributeMethods(Class<? extends Annotation> annotationType) {
         List<Method> methods = ATTRIBUTE_METHODS_CACHE.get(annotationType);
         if (methods == null) {
@@ -266,10 +305,9 @@ public class AnnotationUtils {
         return methods;
     }
 
-    public static boolean isAttributeMethod(Method method) {
-        return (method != null && method.getParameterCount() == 0 && method.getReturnType() != void.class);
-    }
-
+    /**
+     * 看看某个方法是否为注解的annotationType()方法。
+     */
     public static boolean isAnnotationTypeMethod(Method method) {
         return (method != null && "annotationType".equals(method.getName()) && method.getParameterCount() == 0);
     }

@@ -3,6 +3,7 @@ package com.dragon.springframework.core.annotation;
 import com.dragon.springframework.core.Assert;
 import com.dragon.springframework.core.ObjectUtils;
 import com.dragon.springframework.core.StringUtils;
+import lombok.Getter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -18,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author SuccessZhang
  * @date 2020/06/11
  */
+@Getter
 public class AliasDescriptor {
 
     private static final Map<Method, AliasDescriptor> ALIAS_DESCRIPTOR_CACHE =
@@ -37,26 +39,6 @@ public class AliasDescriptor {
 
     private final boolean isAliasPair;
 
-    public Method getSourceAttribute() {
-        return sourceAttribute;
-    }
-
-    public Class<? extends Annotation> getSourceAnnotationType() {
-        return sourceAnnotationType;
-    }
-
-    public Method getAliasedAttribute() {
-        return aliasedAttribute;
-    }
-
-    public Class<? extends Annotation> getAliasedAnnotationType() {
-        return aliasedAnnotationType;
-    }
-
-    public String getAliasedAttributeName() {
-        return aliasedAttributeName;
-    }
-
     public static AliasDescriptor from(Method attribute) {
         AliasDescriptor descriptor = ALIAS_DESCRIPTOR_CACHE.get(attribute);
         if (descriptor == null) {
@@ -71,6 +53,10 @@ public class AliasDescriptor {
         return descriptor;
     }
 
+    /**
+     * 构造方法私有化，希望外部使用
+     * {@link #from(Method)}来创建此类的实例。
+     */
     @SuppressWarnings("unchecked")
     private AliasDescriptor(Method sourceAttribute, AliasFor aliasFor) {
         Class<?> declaringClass = sourceAttribute.getDeclaringClass();
@@ -100,13 +86,14 @@ public class AliasDescriptor {
     }
 
     /**
-     * 通过注解属性上提供的{@link AliasFor @AliasFor}注解，
+     * 通过注解属性上提供的{@link AliasFor}注解，
      * 获取配置的别名属性的名称；如果未指定别名，
      * 则获取原始属性的名称（指向元注解的同名属性）。
      */
     private String getAliasedAttributeName(AliasFor aliasFor, Method attribute) {
         String attributeName = aliasFor.attribute();
         String value = aliasFor.value();
+        //可以理解为attributeName不是null并且不是""，就会返回true
         boolean attributeDeclared = StringUtils.hasText(attributeName);
         boolean valueDeclared = StringUtils.hasText(value);
         if (attributeDeclared && valueDeclared) {
@@ -122,6 +109,7 @@ public class AliasDescriptor {
      * 合法性校验。
      */
     private void validate() {
+        //isAnnotationMetaPresent()如果有指定的元注解返回true。
         if (!this.isAliasPair && !AnnotationUtils.isAnnotationMetaPresent(this.sourceAnnotationType, this.aliasedAnnotationType)) {
             String msg = String.format("@AliasFor declaration on attribute '%s' in annotation [%s] declares an alias for attribute '%s' in meta-annotation [%s] which is not meta-present.",
                     this.sourceAttributeName, this.sourceAnnotationType.getName(), this.aliasedAttributeName,
@@ -157,6 +145,9 @@ public class AliasDescriptor {
         }
     }
 
+    /**
+     * 注解中用default声明的默认值合法性校验。
+     */
     private void validateDefaultValueConfiguration(Method aliasedAttribute) {
         Assert.notNull(aliasedAttribute, "aliasedAttribute must not be null");
         Object defaultValue = this.sourceAttribute.getDefaultValue();
@@ -167,6 +158,8 @@ public class AliasDescriptor {
                     aliasedAttribute.getDeclaringClass().getName());
             throw new RuntimeException(msg);
         }
+        // 如果都为null返回true，如果只有一个为null返回false，其他情况
+        // 用Arrays.equals比较数组，并根据数组元素而不是数组引用执行相等检查。
         if (!ObjectUtils.nullSafeEquals(defaultValue, aliasedDefaultValue)) {
             String msg = String.format("Misconfigured aliases: attribute '%s' in annotation [%s] and attribute '%s' in annotation [%s] must declare the same default value.",
                     this.sourceAttributeName, this.sourceAnnotationType.getName(), aliasedAttribute.getName(),
@@ -197,6 +190,7 @@ public class AliasDescriptor {
      */
     private List<AliasDescriptor> getOtherDescriptors() {
         List<AliasDescriptor> otherDescriptors = new ArrayList<>();
+        //getAttributeMethods()获取注解上所有的属性方法。
         for (Method currentAttribute : AnnotationUtils.getAttributeMethods(this.sourceAnnotationType)) {
             if (!this.sourceAttribute.equals(currentAttribute)) {
                 AliasDescriptor otherDescriptor = AliasDescriptor.from(currentAttribute);
@@ -206,6 +200,16 @@ public class AliasDescriptor {
             }
         }
         return otherDescriptors;
+    }
+
+    /**
+     * 获取属性覆盖描述符。
+     */
+    private AliasDescriptor getAttributeOverrideDescriptor() {
+        if (this.isAliasPair) {
+            return null;
+        }
+        return AliasDescriptor.from(this.aliasedAttribute);
     }
 
     /**
@@ -228,6 +232,10 @@ public class AliasDescriptor {
         return false;
     }
 
+    /**
+     * 获取通过{@link AliasFor}配置的
+     * 同层次覆盖属性的名称。
+     */
     String getAttributeOverrideName(Class<? extends Annotation> metaAnnotationType) {
         Assert.notNull(metaAnnotationType, "metaAnnotationType must not be null");
         Assert.isTrue(Annotation.class != metaAnnotationType,
@@ -241,19 +249,5 @@ public class AliasDescriptor {
             desc = desc.getAttributeOverrideDescriptor();
         }
         return null;
-    }
-
-    private AliasDescriptor getAttributeOverrideDescriptor() {
-        if (this.isAliasPair) {
-            return null;
-        }
-        return AliasDescriptor.from(this.aliasedAttribute);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%s: @%s(%s) is an alias for @%s(%s)", getClass().getSimpleName(),
-                this.sourceAnnotationType.getSimpleName(), this.sourceAttributeName,
-                this.aliasedAnnotationType.getSimpleName(), this.aliasedAttributeName);
     }
 }
