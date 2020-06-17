@@ -55,7 +55,6 @@ public class AnnotationUtils {
             return null;
         }
         Map<String, Object> attributes = new LinkedHashMap<>(8);
-        Class<? extends Annotation> targetType = target.annotationType();
         for (Annotation annotation : visited) {
             Class<? extends Annotation> annotationType = annotation.annotationType();
             List<AliasDescriptor> descriptors = new ArrayList<>();
@@ -70,28 +69,28 @@ public class AnnotationUtils {
             }
             // 遍历该注解上的所有别名描述器，并判断目标注解的属性是否有被其他注解覆盖
             for (AliasDescriptor descriptor : descriptors) {
-                if (descriptor.getAliasedAnnotationType() == targetType) {
+                if (descriptor.getAliasedAnnotationType() == targetAnnotationType) {
                     String aliasedAttributeName = descriptor.getAliasedAttributeName();
                     if (!attributes.containsKey(aliasedAttributeName)) {
                         Object value = ReflectionUtils.invokeMethod(descriptor.getSourceAttribute(),
                                 getMergedAnnotation(element, descriptor.getSourceAnnotationType()));
                         attributes.put(aliasedAttributeName, value);
-                        handleForEachOtherSituation(attributes, targetType, descriptor.getAliasedAttribute(), value);
+                        handleForEachOtherSituation(attributes, targetAnnotationType, descriptor.getAliasedAttribute(), value);
                     }
                 }
             }
         }
         // 判断哪些属性没有被覆盖，没覆盖则补上对应的属性值，需要考虑互为别名的情况
-        for (Method attribute : getAttributeMethods(targetType)) {
+        for (Method attribute : getAttributeMethods(targetAnnotationType)) {
             String attributeName = attribute.getName();
             if (!attributes.containsKey(attributeName)) {
                 Object value = ReflectionUtils.invokeMethod(attribute, target);
                 attributes.put(attributeName, value);
-                Object defaultValue = getDefaultValue(targetType, attribute.getName());
+                Object defaultValue = getDefaultValue(targetAnnotationType, attribute.getName());
                 if (value.equals(defaultValue)) {
                     continue;
                 }
-                handleForEachOtherSituation(attributes, targetType, attribute, value);
+                handleForEachOtherSituation(attributes, targetAnnotationType, attribute, value);
             }
         }
         return attributes;
