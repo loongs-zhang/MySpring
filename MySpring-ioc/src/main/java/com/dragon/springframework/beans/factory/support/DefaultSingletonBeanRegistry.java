@@ -64,6 +64,9 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
         }
     }
 
+    /**
+     * 销毁所有单例。
+     */
     public void destroySingletons() {
         String[] disposableBeanNames;
         synchronized (this.disposableBeans) {

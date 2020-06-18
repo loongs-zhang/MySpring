@@ -5,8 +5,8 @@ import com.dragon.springframework.beans.factory.BeanFactory;
 import com.dragon.springframework.beans.factory.DisposableBean;
 
 /**
- * {@link BeanFactory}接口的扩展，将由能够自动装配的bean工厂实现，
- * 只要它们想为现有bean实例公开此功能。
+ * {@link BeanFactory}接口的扩展，由那些能够自动装配的、
+ * 想为现有bean实例公开此功能的bean工厂实现。
  *
  * @author SuccessZhang
  * @date 2020/06/12

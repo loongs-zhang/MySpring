@@ -9,7 +9,6 @@ import com.dragon.springframework.beans.factory.FactoryBean;
 import com.dragon.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import com.dragon.springframework.core.StringUtils;
 
-import java.security.AccessController;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -95,7 +94,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends DefaultSingleto
         if (name == null) {
             return false;
         }
-        return !this.isSingleton(name);
+        return !this.isSingleton(name) &&
+                this.getBeanDefinition(name).isPrototype();
     }
 
     @Override
@@ -115,32 +115,39 @@ public abstract class AbstractAutowireCapableBeanFactory extends DefaultSingleto
 
     @Override
     public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName) throws Exception {
-        for (BeanPostProcessor processor : this.beanPostProcessors) {
-            try {
-                existingBean = processor.postProcessBeforeInitialization(existingBean, beanName);
-            } catch (Exception e) {
-                e.printStackTrace();
+        Object result = existingBean;
+        // 遍历容器为所创建的Bean添加的所有BeanPostProcessor后置处理器
+        for (BeanPostProcessor beanProcessor : this.beanPostProcessors) {
+            // 调用Bean实例所有的后置处理中的初始化前处理方法，
+            // 为Bean实例对象在初始化之前做一些自定义的处理操作
+            Object current = beanProcessor.postProcessBeforeInitialization(result, beanName);
+            if (current == null) {
+                return result;
             }
+            result = current;
         }
-        return existingBean;
+        return result;
     }
 
     @Override
     public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName) throws Exception {
-        for (BeanPostProcessor processor : this.beanPostProcessors) {
-            try {
-                existingBean = processor.postProcessAfterInitialization(existingBean, beanName);
-            } catch (Exception e) {
-                e.printStackTrace();
+        Object result = existingBean;
+        //遍历容器为所创建的Bean添加的所有BeanPostProcessor后置处理器
+        for (BeanPostProcessor beanProcessor : this.beanPostProcessors) {
+            // 调用Bean实例所有的后置处理中的初始化后处理方法，
+            // 为Bean实例对象在初始化之后做一些自定义的处理操作
+            Object current = beanProcessor.postProcessAfterInitialization(result, beanName);
+            if (current == null) {
+                return result;
             }
+            result = current;
         }
-        return existingBean;
+        return result;
     }
 
     @Override
     public void destroyBean(Object existingBean) {
-        new DisposableBeanAdapter(existingBean, this.beanPostProcessors, AccessController.getContext())
-                .destroy();
+
     }
 
     @Override

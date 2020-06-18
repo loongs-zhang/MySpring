@@ -1,4 +1,4 @@
-package com.dragon.springframework.test.extend;
+package com.example.demo.annotation.nature;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

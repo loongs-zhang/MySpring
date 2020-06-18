@@ -34,7 +34,8 @@ public interface ListableBeanFactory extends BeanFactory {
     String[] getBeanNamesForAnnotation(Class<? extends Annotation> annotationType);
 
     /**
-     * 查找加了某个指定注解的所有bean，返回带有相应bean实例的bean名称的映射。
+     * 查找加了某个指定注解的所有bean，
+     * 返回带有相应bean实例的bean名称的映射。
      */
     Map<String, Object> getBeansWithAnnotation(Class<? extends Annotation> annotationType) throws Exception;
 }

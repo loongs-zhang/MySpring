@@ -30,7 +30,8 @@ import org.dom4j.Document;
 public interface BeanDefinitionDocumentReader {
 
     /**
-     * 从给定的DOM文档中读取bean定义，并在给定的阅读器上下文中向注册表注册它们。
+     * 从给定的DOM文档中读取bean定义，并向给定的
+     * 阅读器上下文中向注册表注册它们。
      */
     void registerBeanDefinitions(Document doc, XmlReaderContext readerContext)
             throws Exception;

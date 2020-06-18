@@ -38,7 +38,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
             try (InputStream inputStream = getBeanClassLoader().getResourceAsStream(fileName)) {
                 SAXReader xmlReader = new SAXReader();
                 Document document = xmlReader.read(inputStream);
-                //将bean的配置信息注册到伪IOC容器
+                //将bean的配置信息注册到Bean定义IOC容器
                 documentReader.registerBeanDefinitions(document, new XmlReaderContext(this));
             }
             return getRegistry().getBeanDefinitionCount() - countBefore;
