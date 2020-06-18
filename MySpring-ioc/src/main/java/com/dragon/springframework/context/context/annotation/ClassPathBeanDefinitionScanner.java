@@ -66,14 +66,16 @@ public class ClassPathBeanDefinitionScanner {
                         if ("".equals(factoryBeanName)) {
                             factoryBeanName = StringUtils.lowerFirstCase(beanClass.getSimpleName());
                         }
-                        BeanDefinition beanDefinition = doCreateBeanDefinition(fullClassName, beanClass, factoryBeanName, autowire, initMethod, destroyMethod);
+                        BeanDefinition beanDefinition = doCreateBeanDefinition(fullClassName, beanClass,
+                                factoryBeanName, autowire, initMethod, destroyMethod);
                         Class<?>[] interfaces = beanClass.getInterfaces();
                         registry.registerBeanDefinition(factoryBeanName, beanDefinition);
                         beanDefinitions.add(beanDefinition);
                         for (Class<?> i : interfaces) {
                             String interfaceName = StringUtils.lowerFirstCase(i.getSimpleName());
                             if (!"".equals(interfaceName)) {
-                                beanDefinition = doCreateBeanDefinition(fullClassName, beanClass, interfaceName, autowire, initMethod, destroyMethod);
+                                beanDefinition = doCreateBeanDefinition(fullClassName, beanClass,
+                                        interfaceName, autowire, initMethod, destroyMethod);
                                 registry.registerBeanDefinition(interfaceName, beanDefinition);
                                 beanDefinitions.add(beanDefinition);
                             }

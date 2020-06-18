@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
 public @interface Lazy {
 
     /**
-     * 是否延时加载，默认不延时加载。
+     * 是否延时加载，默认非延时加载。
      */
     boolean value() default false;
 
