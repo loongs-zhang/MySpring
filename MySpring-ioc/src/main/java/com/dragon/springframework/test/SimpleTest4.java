@@ -9,7 +9,7 @@ import com.dragon.springframework.context.stereotype.Component;
  * @date 2020/06/12
  */
 @Component
-public class JavaBean {
+public class SimpleTest4 {
     public static void main(String[] args) throws Exception {
         GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:applicationContext.xml");
         for (String beanDefinitionName : context.getBeanDefinitionNames()) {
