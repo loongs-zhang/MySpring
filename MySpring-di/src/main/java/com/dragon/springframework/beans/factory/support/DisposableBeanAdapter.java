@@ -6,6 +6,7 @@ import com.dragon.springframework.beans.factory.DisposableBean;
 import com.dragon.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
 import com.dragon.springframework.core.Assert;
 import com.dragon.springframework.core.ReflectionUtils;
+import com.dragon.springframework.core.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
@@ -51,7 +52,7 @@ class DisposableBeanAdapter implements DisposableBean, Runnable, Serializable {
         this.beanName = beanName;
         this.invokeDisposableBean = (this.bean instanceof DisposableBean);
         this.acc = acc;
-        String destroyMethodName = beanDefinition.getDestroyMethodName();
+        String destroyMethodName = inferDestroyMethodIfNecessary(bean, beanDefinition);
         if (destroyMethodName != null && !(this.invokeDisposableBean && "destroy".equals(destroyMethodName))) {
             this.destroyMethodName = destroyMethodName;
             this.destroyMethod = determineDestroyMethod(destroyMethodName);
@@ -69,6 +70,24 @@ class DisposableBeanAdapter implements DisposableBean, Runnable, Serializable {
             }
         }
         this.beanPostProcessors = filterPostProcessors(postProcessors, bean);
+    }
+
+    private String inferDestroyMethodIfNecessary(Object bean, BeanDefinition beanDefinition) {
+        String destroyMethodName = beanDefinition.getDestroyMethodName();
+        if (destroyMethodName == null && bean instanceof AutoCloseable) {
+            if (!(bean instanceof DisposableBean)) {
+                try {
+                    return bean.getClass().getMethod("close").getName();
+                } catch (NoSuchMethodException ex) {
+                    try {
+                        return bean.getClass().getMethod("shutdown").getName();
+                    } catch (NoSuchMethodException ex2) {
+                    }
+                }
+            }
+            return null;
+        }
+        return (StringUtils.hasText(destroyMethodName) ? destroyMethodName : null);
     }
 
     private Method determineDestroyMethod(String name) {

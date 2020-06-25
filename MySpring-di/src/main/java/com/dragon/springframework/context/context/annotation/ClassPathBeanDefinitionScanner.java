@@ -91,7 +91,7 @@ public class ClassPathBeanDefinitionScanner {
 
     private BeanDefinition doCreateBeanDefinition(String beanClassName, Class<?> beanClass, String beanName, boolean autowire, String initMethodName, String destroyMethodName) {
         String scopeName = ConfigurableBeanFactory.SCOPE_SINGLETON;
-        Scope scope = beanClass.getAnnotation(Scope.class);
+        Scope scope = AnnotationUtils.getMergedAnnotation(beanClass, Scope.class);
         if (scope != null) {
             scopeName = scope.scopeName();
         }
@@ -112,7 +112,7 @@ public class ClassPathBeanDefinitionScanner {
                 .initMethodName(initMethodName)
                 .destroyMethodName(destroyMethodName)
                 .build();
-        Lazy lazy = beanClass.getAnnotation(Lazy.class);
+        Lazy lazy = AnnotationUtils.getMergedAnnotation(beanClass, Lazy.class);
         if (lazy != null) {
             beanDefinition.setLazyInit(lazy.value());
         }

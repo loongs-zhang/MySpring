@@ -4,6 +4,7 @@ import com.dragon.springframework.beans.config.BeanPostProcessor;
 import com.dragon.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
 import com.dragon.springframework.context.ApplicationContextAware;
 import com.dragon.springframework.context.ApplicationEventPublisherAware;
+import com.dragon.springframework.context.context.annotation.Bean;
 
 /**
  * 用于访问Spring bean容器的根接口。
@@ -22,14 +23,14 @@ import com.dragon.springframework.context.ApplicationEventPublisherAware;
  * 9.{@link ApplicationContextAware}；
  * 10.ServletContextAware（未实现）；
  * 11.{@link BeanPostProcessor#postProcessBeforeInitialization}；
- * 12.{@link ApplicationEventPublisherAware}；
- * 13.自定义的初始化方法；
+ * 12.{@link InitializingBean}；
+ * 13.自定义的初始化方法{@link Bean#initMethod()}；
  * 14.{@link BeanPostProcessor#postProcessAfterInitialization}；
  * <p>
  * 在关闭BeanFactory时，适用以下生命周期方法：
  * 1.{@link DestructionAwareBeanPostProcessor#postProcessBeforeDestruction}；
- * 2.DisposableBean{@link DisposableBean}；
- * 3.自定义的销毁方法；
+ * 2.{@link DisposableBean}；
+ * 3.自定义的销毁方法{@link Bean#destroyMethod()}；
  *
  * @author SuccessZhang
  * @date 2020/06/07

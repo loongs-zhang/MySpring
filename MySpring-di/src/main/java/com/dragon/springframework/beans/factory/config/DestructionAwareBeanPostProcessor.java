@@ -27,8 +27,8 @@ import com.dragon.springframework.beans.config.BeanPostProcessor;
 public interface DestructionAwareBeanPostProcessor extends BeanPostProcessor {
 
     /**
-     * 在销毁该BeanPostProcessor之前，将其应用于给定的bean实例。
-     * 可以调用自定义销毁回调，此回调仅适用于工厂中的单例bean（包括内部bean）。
+     * 在销毁该BeanPostProcessor之前，将其应用于给定的bean实例。可以
+     * 调用自定义销毁回调，此回调仅适用于工厂中的单例bean（包括内部bean）。
      */
     void postProcessBeforeDestruction(Object bean, String beanName) throws Exception;
 

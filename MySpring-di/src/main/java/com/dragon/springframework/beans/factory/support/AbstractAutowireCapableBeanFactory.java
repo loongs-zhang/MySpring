@@ -4,11 +4,21 @@ import com.dragon.springframework.beans.BeanWrapper;
 import com.dragon.springframework.beans.config.BeanDefinition;
 import com.dragon.springframework.beans.config.BeanPostProcessor;
 import com.dragon.springframework.beans.config.ConfigurableBeanFactory;
+import com.dragon.springframework.beans.factory.Aware;
+import com.dragon.springframework.beans.factory.BeanClassLoaderAware;
 import com.dragon.springframework.beans.factory.BeanFactory;
+import com.dragon.springframework.beans.factory.BeanFactoryAware;
+import com.dragon.springframework.beans.factory.BeanNameAware;
 import com.dragon.springframework.beans.factory.FactoryBean;
+import com.dragon.springframework.beans.factory.InitializingBean;
+import com.dragon.springframework.beans.factory.annotation.Autowired;
 import com.dragon.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import com.dragon.springframework.context.context.annotation.Lazy;
 import com.dragon.springframework.core.StringUtils;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.util.HashSet;
 import java.util.Map;
@@ -24,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author SuccessZhang
  * @date 2020/06/08
  */
+@SuppressWarnings({"unused", "unchecked"})
 public abstract class AbstractAutowireCapableBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory, AutowireCapableBeanFactory {
 
     private final Set<BeanPostProcessor> beanPostProcessors = new HashSet<>();
@@ -65,7 +76,20 @@ public abstract class AbstractAutowireCapableBeanFactory extends DefaultSingleto
 
     @Override
     public <T> T getBean(String beanName, Class<T> requiredType, Object... args) throws Exception {
-        //todo 目前需要做的仅仅是注册bean的定义信息
+        BeanDefinition beanDefinition = getBeanDefinition(beanName);
+        if (beanDefinition == null) {
+            return null;
+        }
+        Object bean = getSingleton(beanName);
+        if (bean == null) {
+            bean = createBean(beanName, beanDefinition, args);
+        }
+        if (beanDefinition.isSingleton()) {
+            registerSingleton(beanName, bean);
+        }
+        if (requiredType == null || requiredType.isInstance(bean)) {
+            return (T) bean;
+        }
         return null;
     }
 
@@ -105,12 +129,25 @@ public abstract class AbstractAutowireCapableBeanFactory extends DefaultSingleto
 
     @Override
     public <T> T createBean(Class<T> beanClass) throws Exception {
-        return null;
+        String factoryBeanName = StringUtils.lowerFirstCase(beanClass.getSimpleName());
+        BeanDefinition beanDefinition = BeanDefinition.builder()
+                .lazyInit(false)
+                .scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+                .factoryBeanName(factoryBeanName)
+                .beanClassName(beanClass.getName())
+                .beanClass(beanClass)
+                .autowire(true)
+                .build();
+        Lazy lazy = beanClass.getAnnotation(Lazy.class);
+        if (lazy != null) {
+            beanDefinition.setLazyInit(lazy.value());
+        }
+        return (T) createBean(factoryBeanName, beanDefinition, null);
     }
 
     @Override
     public Object initializeBean(Object existingBean, String beanName) throws Exception {
-        return null;
+        return initializeBean(beanName, existingBean, this.getBeanDefinition(beanName));
     }
 
     @Override
@@ -160,6 +197,153 @@ public abstract class AbstractAutowireCapableBeanFactory extends DefaultSingleto
     protected void removeSingleton(String beanName) {
         super.removeSingleton(beanName);
         this.factoryBeanInstanceCache.remove(beanName);
+    }
+
+    protected Object createBean(String beanName, BeanDefinition bd, Object[] args) throws Exception {
+        BeanWrapper instanceWrapper = this.factoryBeanInstanceCache.get(beanName);
+        if (instanceWrapper == null) {
+            instanceWrapper = createBeanInstance(beanName, bd, args);
+            this.factoryBeanInstanceCache.put(beanName, instanceWrapper);
+            Object bean = instanceWrapper.getWrappedObject();
+            try {
+                populateBean(beanName, bd, instanceWrapper);
+                bean = initializeBean(beanName, bean, bd);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                registerDisposableBeanIfNecessary(beanName, bean, bd);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            instanceWrapper.setWrappedObject(bean);
+            instanceWrapper.setWrappedClass(bean.getClass());
+        }
+        return instanceWrapper.getWrappedObject();
+    }
+
+    private BeanWrapper createBeanInstance(String beanName, BeanDefinition beanDefinition, Object... args) throws Exception {
+        Class<?> beanClass = beanDefinition.getBeanClass();
+        if (args == null) {
+            return instantiateBean(beanName, beanDefinition);
+        }
+        Class<?>[] argTypes = new Class[args.length];
+        for (int i = 0; i < args.length; i++) {
+            argTypes[i] = args[i].getClass();
+        }
+        Constructor<?> constructor = beanClass.getConstructor(argTypes);
+        return autowireConstructor(beanName, beanDefinition, constructor, args);
+    }
+
+    private BeanWrapper instantiateBean(final String beanName, final BeanDefinition bd) {
+        try {
+            Object instance;
+            Class<?> beanClass = bd.getBeanClass();
+            Constructor<?> constructor = beanClass.getConstructor();
+            if (bd.isSingleton()) {
+                instance = super.getSingleton(beanName);
+                if (instance == null) {
+                    instance = constructor.newInstance();
+                    super.registerSingleton(beanName, instance);
+                }
+            } else {
+                instance = constructor.newInstance();
+            }
+            return new BeanWrapper(instance, beanClass, instance, beanClass);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private BeanWrapper autowireConstructor(String beanName, BeanDefinition beanDefinition, Constructor<?> constructor, Object[] explicitArgs) {
+        try {
+            Object instance;
+            Class<?> beanClass = beanDefinition.getBeanClass();
+            if (beanDefinition.isSingleton()) {
+                instance = super.getSingleton(beanName);
+                if (instance == null) {
+                    instance = constructor.newInstance(explicitArgs);
+                    super.registerSingleton(beanName, instance);
+                }
+            } else {
+                instance = constructor.newInstance(explicitArgs);
+            }
+            return new BeanWrapper(instance, beanClass, instance, beanClass);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private void populateBean(String beanName, BeanDefinition beanDefinition, BeanWrapper beanWrapper) throws Exception {
+        Object instance = beanWrapper.getRootObject();
+        Class<?> beanClass = beanDefinition.getBeanClass();
+        Field[] fields = beanClass.getDeclaredFields();
+        for (Field field : fields) {
+            Autowired autowired = field.getAnnotation(Autowired.class);
+            if (autowired == null) {
+                continue;
+            }
+            String autowiredBeanName = autowired.value().trim();
+            Class<?> fieldType = field.getType();
+            if ("".equals(autowiredBeanName)) {
+                autowiredBeanName = StringUtils.lowerFirstCase(fieldType.getSimpleName());
+            }
+            field.setAccessible(true);
+            field.set(instance, getBean(autowiredBeanName, fieldType));
+        }
+    }
+
+    private Object initializeBean(String beanName, Object bean, BeanDefinition beanDefinition) throws Exception {
+        invokeAwareMethods(beanName, bean);
+        bean = applyBeanPostProcessorsBeforeInitialization(bean, beanName);
+        try {
+            bean = invokeInitMethods(beanName, bean, beanDefinition);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
+        return bean;
+    }
+
+    private void invokeAwareMethods(final String beanName, final Object bean) {
+        if (bean instanceof Aware) {
+            if (bean instanceof BeanNameAware) {
+                ((BeanNameAware) bean).setBeanName(beanName);
+            }
+            if (bean instanceof BeanClassLoaderAware) {
+                ClassLoader bcl = ClassLoader.getSystemClassLoader();
+                if (bcl != null) {
+                    ((BeanClassLoaderAware) bean).setBeanClassLoader(bcl);
+                }
+            }
+            if (bean instanceof BeanFactoryAware) {
+                try {
+                    ((BeanFactoryAware) bean).setBeanFactory(AbstractAutowireCapableBeanFactory.this);
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+
+    private Object invokeInitMethods(String beanName, Object bean, BeanDefinition beanDefinition) throws Throwable {
+        if (bean instanceof InitializingBean) {
+            ((InitializingBean) bean).afterPropertiesSet();
+        }
+        String initMethodName = beanDefinition.getInitMethodName();
+        if (!beanDefinition.isAutowire() && !"".equals(initMethodName)) {
+            //不自动装配，调用指定的init方法
+            Method method = bean.getClass().getDeclaredMethod(initMethodName);
+            bean = method.invoke(bean);
+        }
+        return bean;
+    }
+
+    protected void registerDisposableBeanIfNecessary(String beanName, Object bean, BeanDefinition mbd) {
+        if (mbd.isSingleton()) {
+            registerDisposableBean(beanName,
+                    new DisposableBeanAdapter(bean, beanName, mbd, this.beanPostProcessors,
+                            AccessController.getContext()));
+        }
     }
 
     /**

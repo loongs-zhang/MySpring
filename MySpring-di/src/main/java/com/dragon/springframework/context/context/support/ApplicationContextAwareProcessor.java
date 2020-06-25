@@ -9,8 +9,8 @@ import com.dragon.springframework.context.ApplicationEventPublisherAware;
 /**
  * {@link BeanPostProcessor}实现，将ApplicationContext传递给实现
  * {@link ApplicationEventPublisherAware}和{@link ApplicationContextAware}接口
- * 的类。按上面提到的顺序满足实现的接口，应用程序上下文将自动在其基础bean工厂中
- * 注册它，应用程序不直接使用它。
+ * 的类。按上面提到的顺序满足实现的接口，应用程序上下文将自动在
+ * 其基础bean工厂中注册它，应用程序不直接使用它。
  *
  * @author SuccessZhang
  * @date 2020/06/12

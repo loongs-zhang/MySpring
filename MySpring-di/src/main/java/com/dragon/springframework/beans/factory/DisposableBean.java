@@ -16,12 +16,14 @@
 
 package com.dragon.springframework.beans.factory;
 
+import com.dragon.springframework.context.context.annotation.Bean;
+
 /**
  * 要在销毁时释放资源的Bean所实现的接口。
  * 如果BeanFactory处理已缓存的单例，则应该调用destroy方法。
  * 应用程序上下文应该在关闭时处理其所有单例。
  * 实现DisposableBean的另一种方法是指定自定义destroy-method，
- * 例如在XML的bean定义中。
+ * 例如使用{@link Bean#destroyMethod()}。
  *
  * @author SuccessZhang
  * @date 2020/06/07
