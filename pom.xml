@@ -11,11 +11,11 @@
         <module>MySpring-demo</module>
         <module>MySpring-reflect</module>
         <module>MySpring-design</module>
-        <module>MySpring-ioc</module>
-        <module>MySpring-di</module>
+        <module>MySpring-bdioc</module>
+        <module>MySpring-ioc&amp;di</module>
         <module>MySpring-aop</module>
         <module>MySpring-mvc</module>
-        <module>MySpring-final</module>
+        <module>MySpring-tx</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -43,12 +43,12 @@
             </dependency>
             <dependency>
                 <groupId>com.example</groupId>
-                <artifactId>MySpring-ioc</artifactId>
+                <artifactId>MySpring-bdioc</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.example</groupId>
-                <artifactId>MySpring-di</artifactId>
+                <artifactId>MySpring-ioc&amp;di</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
             <dependency>

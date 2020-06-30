@@ -11,5 +11,11 @@
 
     <artifactId>MySpring-aop</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>MySpring-ioc&amp;di</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 </project>
