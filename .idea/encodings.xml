@@ -3,13 +3,12 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MySpring-aop" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MySpring-bdioc" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MySpring-demo" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MySpring-design" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/MySpring-di" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/MySpring-final" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/MySpring-final" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/MySpring-ioc" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MySpring-ioc&amp;di" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MySpring-mvc" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MySpring-reflect" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MySpring-tx" charset="UTF-8" />
   </component>
 </project>

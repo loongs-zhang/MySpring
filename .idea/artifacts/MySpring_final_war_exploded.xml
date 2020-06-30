@@ -2,10 +2,10 @@
   <artifact type="exploded-war" name="MySpring-final:war exploded">
     <output-path>$PROJECT_DIR$/out/artifacts/MySpring_final_war_exploded</output-path>
     <root id="root">
-      <element id="javaee-facet-resources" facet="MySpring-final/web/Web" />
+      <element id="javaee-facet-resources" facet="MySpring-tx/web/Web" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
-          <element id="module-output" name="MySpring-final" />
+          <element id="module-output" name="MySpring-tx" />
         </element>
       </element>
     </root>

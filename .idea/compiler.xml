@@ -10,27 +10,27 @@
         <module name="MySpring-design" />
         <module name="MySpring-aop" />
         <module name="MySpring-reflect" />
-        <module name="MySpring-final" />
+        <module name="MySpring-bdioc" />
         <module name="MySpring-mvc" />
-        <module name="MySpring-di" />
-        <module name="MySpring-ioc" />
+        <module name="MySpring-tx" />
+        <module name="MySpring-ioc&amp;di" />
         <module name="MySpring-demo" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="MySpring-final" target="1.8" />
+      <module name="MySpring-tx" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="MySpring-aop" options="" />
+      <module name="MySpring-bdioc" options="" />
       <module name="MySpring-demo" options="" />
       <module name="MySpring-design" options="" />
-      <module name="MySpring-di" options="" />
-      <module name="MySpring-final" options="" />
-      <module name="MySpring-ioc" options="" />
+      <module name="MySpring-ioc&amp;di" options="" />
       <module name="MySpring-mvc" options="" />
       <module name="MySpring-reflect" options="-parameters" />
+      <module name="MySpring-tx" options="" />
     </option>
   </component>
 </project>
