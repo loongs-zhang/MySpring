@@ -30,10 +30,6 @@ public class StringUtils {
         return (str != null && str.length() > 0 && containsText(str));
     }
 
-    public static boolean hasText(String str) {
-        return (str != null && !str.isEmpty() && containsText(str));
-    }
-
     private static boolean containsText(CharSequence str) {
         int strLen = str.length();
         for (int i = 0; i < strLen; i++) {
