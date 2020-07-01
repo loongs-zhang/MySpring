@@ -11,10 +11,10 @@
         <module name="MySpring-aop" />
         <module name="MySpring-reflect" />
         <module name="MySpring-bdioc" />
-        <module name="MySpring-mvc" />
+        <module name="MySpring-demo" />
         <module name="MySpring-tx" />
         <module name="MySpring-ioc&amp;di" />
-        <module name="MySpring-demo" />
+        <module name="MySpring-mvc" />
       </profile>
     </annotationProcessing>
   </component>
