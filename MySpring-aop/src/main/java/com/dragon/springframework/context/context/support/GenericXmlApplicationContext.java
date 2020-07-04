@@ -15,9 +15,19 @@ public class GenericXmlApplicationContext extends GenericApplicationContext {
     private final XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(this);
 
     public GenericXmlApplicationContext() {
+        try {
+            reader.setBeanFactory(this.getBeanFactory());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public GenericXmlApplicationContext(String... resourceLocations) {
+        try {
+            reader.setBeanFactory(this.getBeanFactory());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         load(resourceLocations);
         try {
             refresh();
