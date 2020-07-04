@@ -67,6 +67,10 @@ public class ClassUtils {
         }
     }
 
+    public static Class<?> getResolvedPrimitive(Class<?> type) {
+        return primitiveWrapperTypeMap.get(type);
+    }
+
     public static List<Class<?>> getAllImplementationByInterface(Class<?> clazz) {
         ArrayList<Class<?>> list = new ArrayList<>();
         // 判断是否是一个接口
