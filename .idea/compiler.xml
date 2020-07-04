@@ -11,16 +11,16 @@
         <module name="MySpring-aop" />
         <module name="MySpring-reflect" />
         <module name="MySpring-bdioc" />
-        <module name="MySpring-demo" />
         <module name="MySpring-tx" />
-        <module name="MySpring-ioc&amp;di" />
         <module name="MySpring-mvc" />
+        <module name="MySpring-ioc&amp;di" />
+        <module name="MySpring-demo" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="MySpring-aop" options="" />
+      <module name="MySpring-aop" options="-parameters" />
       <module name="MySpring-bdioc" options="" />
       <module name="MySpring-demo" options="" />
       <module name="MySpring-design" options="" />
