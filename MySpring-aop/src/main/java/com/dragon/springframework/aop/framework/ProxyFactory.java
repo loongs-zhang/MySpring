@@ -11,8 +11,6 @@ import java.util.Arrays;
 @NoArgsConstructor
 public class ProxyFactory extends AdvisedSupport {
 
-    private final DefaultAopProxyFactory proxyFactory = new DefaultAopProxyFactory();
-
     public ProxyFactory(Object target) {
         setTarget(target);
         Class<?> targetClass = target.getClass();
@@ -30,7 +28,7 @@ public class ProxyFactory extends AdvisedSupport {
      * @return the proxy object
      */
     public Object getProxy() {
-        return proxyFactory.createAopProxy(this).getProxy();
+        return createAopProxy(this).getProxy();
     }
 
     /**
@@ -44,6 +42,14 @@ public class ProxyFactory extends AdvisedSupport {
      * @return the proxy object
      */
     public Object getProxy(ClassLoader classLoader) {
-        return proxyFactory.createAopProxy(this).getProxy(classLoader);
+        return createAopProxy(this).getProxy(classLoader);
+    }
+
+    /***/
+    private AopProxy createAopProxy(AdvisedSupport config) {
+        if (config.getInterfaces().isEmpty()) {
+            return new CglibAopProxy(config);
+        }
+        return new JdkDynamicAopProxy(config);
     }
 }

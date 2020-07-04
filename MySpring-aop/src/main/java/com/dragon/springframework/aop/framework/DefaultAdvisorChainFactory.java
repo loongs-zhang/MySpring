@@ -15,6 +15,7 @@ import java.util.List;
  * @date 2020/07/03
  */
 public class DefaultAdvisorChainFactory {
+    /***/
     public List<Object> getInterceptorsAndDynamicInterceptionAdvice(AdvisedSupport advisedSupport, Method method, Class<?> targetClass) {
         List<Object> advices = new LinkedList<>();
         for (Advisor advisor : advisedSupport.getAdvisors()) {

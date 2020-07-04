@@ -11,6 +11,7 @@ import java.util.Map;
 
 /**
  * @author SuccessZhang
+ * @date 2020/07/03
  */
 public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Cloneable {
 
@@ -128,7 +129,7 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
     public Object proceed() throws Throwable {
         //如果Interceptor执行完了，则执行joinPoint
         if (this.currentInterceptorIndex == this.interceptorsAndDynamicMethodMatchers.size() - 1) {
-            return this.method.invoke(this.target, this.arguments);
+            return invokeJoinpoint();
         }
         Object interceptorOrInterceptionAdvice = this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);
         //如果要动态匹配joinPoint
@@ -142,6 +143,17 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
             //动态匹配失败，跳过当前Interceptor，调用下一个Interceptor
             return proceed();
         }
+    }
+
+    /**
+     * Invoke the joinpoint using reflection.
+     * Subclasses can override this to use custom invocation.
+     *
+     * @return the return value of the joinpoint
+     * @throws Throwable if invoking the joinpoint resulted in an exception
+     */
+    protected Object invokeJoinpoint() throws Throwable {
+        return this.method.invoke(this.target, this.arguments);
     }
 
     @Override

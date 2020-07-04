@@ -32,7 +32,7 @@ final class CglibAopProxy implements AopProxy, MethodInterceptor {
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         Class<?> targetClass = this.advised.getTargetClass();
         List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
-        ProxyMethodInvocation methodInvocation = new ReflectiveMethodInvocation(obj, this.advised.getTarget(), method, args, targetClass, chain);
+        ProxyMethodInvocation methodInvocation = new CglibMethodInvocation(obj, this.advised.getTarget(), method, args, targetClass, chain, proxy);
         return methodInvocation.proceed();
     }
 }

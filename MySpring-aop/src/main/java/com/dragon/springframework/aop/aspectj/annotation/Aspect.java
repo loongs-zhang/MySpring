@@ -11,7 +11,8 @@ import java.lang.annotation.Target;
 /**
  * Aspect declaration
  *
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author SuccessZhang
+ * @date 2020/07/04
  */
 @Component
 @Retention(RetentionPolicy.RUNTIME)
