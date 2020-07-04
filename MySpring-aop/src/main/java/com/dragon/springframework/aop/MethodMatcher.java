@@ -1,4 +1,4 @@
-package com.dragon.springframework.core.expression;
+package com.dragon.springframework.aop;
 
 import java.lang.reflect.Method;
 
@@ -8,7 +8,8 @@ import java.lang.reflect.Method;
  * @author SuccessZhang
  * @date 2020/07/01
  */
-public interface Parser {
+public interface MethodMatcher {
+
     /**
      * 解析的最终结果要么匹配要么不匹配。
      *
@@ -16,5 +17,14 @@ public interface Parser {
      * @param expression 表达式
      * @return 解析的最终结果
      */
-    boolean parse(Method target, String expression);
+    boolean matches(Method target, String expression);
+
+    /**
+     * 解析的最终结果要么匹配要么不匹配。
+     *
+     * @param target 匹配目标
+     * @return 解析的最终结果
+     */
+    boolean matches(Method target);
+
 }
