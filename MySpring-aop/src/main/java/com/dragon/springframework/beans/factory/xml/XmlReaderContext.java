@@ -1,6 +1,9 @@
 package com.dragon.springframework.beans.factory.xml;
 
+import com.dragon.springframework.beans.factory.BeanFactory;
+import com.dragon.springframework.beans.factory.BeanFactoryAware;
 import com.dragon.springframework.beans.factory.support.BeanDefinitionRegistry;
+import lombok.Getter;
 
 /**
  * 专门用于{@link XmlBeanDefinitionReader}。
@@ -8,9 +11,12 @@ import com.dragon.springframework.beans.factory.support.BeanDefinitionRegistry;
  * @author SuccessZhang
  * @date 2020/06/08
  */
-public class XmlReaderContext {
+public class XmlReaderContext implements BeanFactoryAware {
 
     private final XmlBeanDefinitionReader reader;
+
+    @Getter
+    private BeanFactory beanFactory;
 
     public XmlReaderContext(XmlBeanDefinitionReader reader) {
         this.reader = reader;
@@ -37,4 +43,8 @@ public class XmlReaderContext {
         return this.reader.getBeanClassLoader();
     }
 
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws Exception {
+        this.beanFactory = beanFactory;
+    }
 }

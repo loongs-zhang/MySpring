@@ -14,6 +14,7 @@ import com.dragon.springframework.beans.factory.InitializingBean;
 import com.dragon.springframework.beans.factory.annotation.Autowired;
 import com.dragon.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import com.dragon.springframework.context.context.annotation.Lazy;
+import com.dragon.springframework.core.ClassUtils;
 import com.dragon.springframework.core.StringUtils;
 
 import java.lang.reflect.Constructor;
@@ -51,7 +52,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends DefaultSingleto
 
     @Override
     public Object getBean(String beanName) throws Exception {
-        return this.getBean(beanName, (Object[]) null);
+        BeanDefinition beanDefinition = this.getBeanDefinition(beanName);
+        if (beanDefinition == null) {
+            return this.getBean(beanName, (Object[]) null);
+        }
+        return this.getBean(beanName, beanDefinition.getInitArguments());
     }
 
     @Override
@@ -61,7 +66,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends DefaultSingleto
 
     @Override
     public <T> T getBean(Class<T> requiredType) throws Exception {
-        return this.getBean(requiredType, (Object[]) null);
+        String beanName = StringUtils.lowerFirstCase(requiredType.getSimpleName());
+        BeanDefinition beanDefinition = this.getBeanDefinition(beanName);
+        if (beanDefinition == null) {
+            return this.getBean(requiredType, (Object[]) null);
+        }
+        return this.getBean(requiredType, beanDefinition.getInitArguments());
     }
 
     @Override
@@ -71,7 +81,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends DefaultSingleto
 
     @Override
     public <T> T getBean(String beanName, Class<T> requiredType) throws Exception {
-        return this.getBean(beanName, requiredType, (Object[]) null);
+        BeanDefinition beanDefinition = this.getBeanDefinition(beanName);
+        if (beanDefinition == null) {
+            return this.getBean(beanName, requiredType, (Object[]) null);
+        }
+        return this.getBean(beanName, requiredType, beanDefinition.getInitArguments());
     }
 
     @Override
@@ -231,8 +245,27 @@ public abstract class AbstractAutowireCapableBeanFactory extends DefaultSingleto
         for (int i = 0; i < args.length; i++) {
             argTypes[i] = args[i].getClass();
         }
-        Constructor<?> constructor = beanClass.getConstructor(argTypes);
-        return autowireConstructor(beanName, beanDefinition, constructor, args);
+        for (Constructor<?> constructor : beanClass.getConstructors()) {
+            Class<?>[] types = constructor.getParameterTypes();
+            if (argTypes.length != types.length) {
+                continue;
+            }
+            boolean autowired = true;
+            for (int i = 0; i < argTypes.length; i++) {
+                Class<?> type = types[i];
+                Class<?> resolvedPrimitive = ClassUtils.getResolvedPrimitive(argTypes[i]);
+                if (!argTypes[i].equals(type) &&
+                        resolvedPrimitive != null &&
+                        !resolvedPrimitive.equals(type)) {
+                    autowired = false;
+                    break;
+                }
+            }
+            if (autowired) {
+                return autowireConstructor(beanName, beanDefinition, constructor, args);
+            }
+        }
+        return null;
     }
 
     private BeanWrapper instantiateBean(final String beanName, final BeanDefinition bd) {
@@ -330,7 +363,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends DefaultSingleto
             ((InitializingBean) bean).afterPropertiesSet();
         }
         String initMethodName = beanDefinition.getInitMethodName();
-        if (!beanDefinition.isAutowire() && !"".equals(initMethodName)) {
+        if (!beanDefinition.isAutowire() && !StringUtils.isEmpty(initMethodName)) {
             //不自动装配，调用指定的init方法
             Method method = bean.getClass().getDeclaredMethod(initMethodName);
             bean = method.invoke(bean);

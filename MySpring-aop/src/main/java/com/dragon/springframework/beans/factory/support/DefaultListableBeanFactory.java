@@ -56,7 +56,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
             if (beanDefinition.isLazyInit()) {
                 continue;
             }
-            this.getBean(beanDefinition.getFactoryBeanName());
+            this.getBean(beanDefinition.getFactoryBeanName(), beanDefinition.getInitArguments());
         }
     }
 
@@ -97,7 +97,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
         String[] beanNames = this.getBeanDefinitionNames();
         Map<String, T> result = new LinkedHashMap<>(beanNames.length);
         for (String beanName : beanNames) {
-            T bean = super.getBean(beanName, type);
+            T bean = super.getBean(beanName, type, this.getBeanDefinition(beanName).getInitArguments());
             if (bean == null) {
                 continue;
             }

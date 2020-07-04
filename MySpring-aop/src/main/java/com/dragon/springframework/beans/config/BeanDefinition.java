@@ -46,6 +46,11 @@ public class BeanDefinition {
     private final boolean autowire;
 
     /**
+     * 调用构造方法的参数。
+     */
+    private final Object[] initArguments;
+
+    /**
      * 自定义的初始化方法。
      */
     private final String initMethodName;

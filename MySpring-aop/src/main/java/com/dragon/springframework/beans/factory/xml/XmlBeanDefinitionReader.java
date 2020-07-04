@@ -1,5 +1,7 @@
 package com.dragon.springframework.beans.factory.xml;
 
+import com.dragon.springframework.beans.factory.BeanFactory;
+import com.dragon.springframework.beans.factory.BeanFactoryAware;
 import com.dragon.springframework.beans.factory.support.AbstractBeanDefinitionReader;
 import com.dragon.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.dom4j.Document;
@@ -15,13 +17,15 @@ import java.io.InputStream;
  * @author SuccessZhang
  * @date 2020/06/08
  */
-public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
+public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader implements BeanFactoryAware {
 
     private static final String CLASSPATH_URL_PREFIX = "classpath:";
 
     private static final String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
 
     private static final String XML = ".xml";
+
+    private BeanFactory beanFactory;
 
     public XmlBeanDefinitionReader(BeanDefinitionRegistry registry) {
         super(registry);
@@ -39,10 +43,17 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
                 SAXReader xmlReader = new SAXReader();
                 Document document = xmlReader.read(inputStream);
                 //将bean的配置信息注册到伪IOC容器
-                documentReader.registerBeanDefinitions(document, new XmlReaderContext(this));
+                XmlReaderContext context = new XmlReaderContext(this);
+                context.setBeanFactory(this.beanFactory);
+                documentReader.registerBeanDefinitions(document, context);
             }
             return getRegistry().getBeanDefinitionCount() - countBefore;
         }
         return 0;
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws Exception {
+        this.beanFactory = beanFactory;
     }
 }
