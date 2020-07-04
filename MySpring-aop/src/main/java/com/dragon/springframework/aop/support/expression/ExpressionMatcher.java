@@ -48,7 +48,7 @@ public class ExpressionMatcher implements MethodMatcher, ClassFilter {
         if (isMatch != null) {
             return isMatch;
         }
-        int splitter = expression.indexOf(" ");
+        int splitter = expression.lastIndexOf(" ");
         String modifier = expression.substring(0, splitter);
         String packageAndMethod = expression.substring(splitter + 1);
         boolean left, middle = false, right = false;

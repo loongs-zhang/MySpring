@@ -118,7 +118,7 @@ public abstract class AbstractAspectJAdvice implements Advice, Ordered {
                         this.throwingName.equals(throwingName)) {
                     params[i] = ex;
                 }
-            } else {
+            } else if (type.isInstance(returnValue)) {
                 String returningName = parameters[i].getName();
                 if (StringUtils.isEmpty(this.returningName) ||
                         this.returningName.equals(returningName)) {
