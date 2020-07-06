@@ -2,9 +2,10 @@ package com.dragon.springframework.aop.support.expression;
 
 import com.dragon.springframework.aop.MethodMatcher;
 import com.dragon.springframework.core.StringUtils;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Method;
+import java.util.regex.Pattern;
 
 /**
  * 方法表达式匹配器。
@@ -12,20 +13,33 @@ import java.lang.reflect.Method;
  * @author SuccessZhang
  * @date 2020/07/01
  */
+@NoArgsConstructor
 public class DefaultMethodMatcher implements MethodMatcher {
 
-    @Setter
-    private String expression;
+    private final ThreadLocal<String> expression = ThreadLocal.withInitial(() -> "");
+
+    public void setExpression(String expression) {
+        this.expression.set(expression);
+    }
 
     @Override
     public boolean matches(Method target) {
-        return matches(target, this.expression);
+        try {
+            return matches(target, this.expression.get());
+        } finally {
+            this.expression.remove();
+        }
     }
 
     @Override
     public boolean matches(Method target, String expression) {
         if (StringUtils.isEmpty(expression)) {
             return false;
+        }
+        if (!ExpressionMatcher.MODIFIER_MATCHED.get()) {
+            //表达式完全没有匹配过
+            return ExpressionMatcher.getInstance()
+                    .matches(target, expression);
         }
         expression = expression.replaceAll(" ", "");
         boolean nameMatch = false;
@@ -48,7 +62,8 @@ public class DefaultMethodMatcher implements MethodMatcher {
             }
         }
         boolean argsTypeMatch;
-        if ("..".equals(argsType)) {
+        Pattern pattern = Pattern.compile("\\.\\.+");
+        if (pattern.matcher(argsType).matches()) {
             argsTypeMatch = true;
         } else {
             argsTypeMatch = parameterTypes[parameterTypes.length - 1].getName().equals(argsType);

@@ -1,5 +1,7 @@
 package com.dragon.springframework.test;
 
+import com.dragon.springframework.aop.ProxyMethodInvocation;
+import com.dragon.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint;
 import com.dragon.springframework.aop.aspectj.annotation.After;
 import com.dragon.springframework.aop.aspectj.annotation.AfterReturning;
 import com.dragon.springframework.aop.aspectj.annotation.AfterThrowing;
@@ -7,6 +9,7 @@ import com.dragon.springframework.aop.aspectj.annotation.Around;
 import com.dragon.springframework.aop.aspectj.annotation.Aspect;
 import com.dragon.springframework.aop.aspectj.annotation.Before;
 import com.dragon.springframework.aop.aspectj.annotation.Pointcut;
+import com.dragon.springframework.aop.framework.ReflectiveMethodInvocation;
 import com.dragon.springframework.aop.intercept.JoinPoint;
 import com.dragon.springframework.aop.intercept.ProceedingJoinPoint;
 
@@ -23,7 +26,7 @@ import java.util.Arrays;
 @Aspect
 public class LogAspect {
 
-    @Pointcut("execution(* com.dragon.springframework.test.service.TestService.*(..))")
+    @Pointcut("execution(* com.dragon.springframework.test..*.*(..))")
     public void pointcut() {
     }
 
@@ -33,6 +36,8 @@ public class LogAspect {
     @Before("pointcut()")
     private void doBefore(JoinPoint joinPoint) {
         System.out.println("-----doBefore().invoke-----");
+        ReflectiveMethodInvocation methodInvocation = (ReflectiveMethodInvocation) joinPoint;
+        methodInvocation.setUserAttribute("test", "test1");
         System.out.println("-----End of doBefore()------");
     }
 
@@ -45,6 +50,10 @@ public class LogAspect {
     private Object doAround(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         System.out.println("-----doAround().invoke-----");
 
+        MethodInvocationProceedingJoinPoint joinPoint = (MethodInvocationProceedingJoinPoint) proceedingJoinPoint;
+        ProxyMethodInvocation methodInvocation = joinPoint.getMethodInvocation();
+        System.out.println("Around getUserAttribute->" + methodInvocation.getUserAttribute("test"));
+        methodInvocation.setUserAttribute("test", "test2");
         Object[] args = proceedingJoinPoint.getArgs();
         System.out.println("args->" + Arrays.toString(args));
         //调用核心逻辑
@@ -60,6 +69,8 @@ public class LogAspect {
     @After("pointcut()")
     private void doAfter(JoinPoint joinPoint) {
         System.out.println("-----doAfter().invoke-----");
+        ReflectiveMethodInvocation methodInvocation = (ReflectiveMethodInvocation) joinPoint;
+        System.out.println("After getUserAttribute->" + methodInvocation.getUserAttribute("test"));
         System.out.println("-----End of doAfter()------");
     }
 

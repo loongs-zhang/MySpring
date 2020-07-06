@@ -1,7 +1,7 @@
 package com.dragon.springframework.aop;
 
 /**
- * 表达式解析的顶层接口。
+ * 限制切入点与一组给定目标类的匹配的过滤器。
  *
  * @author SuccessZhang
  * @date 2020/07/01
@@ -9,7 +9,7 @@ package com.dragon.springframework.aop;
 public interface ClassFilter {
 
     /**
-     * 解析的最终结果要么匹配要么不匹配。
+     * 判断切入点是否应该应用于给定的接口或目标类。
      *
      * @param target     匹配目标
      * @param expression 表达式
@@ -18,7 +18,7 @@ public interface ClassFilter {
     boolean matches(Class target, String expression);
 
     /**
-     * 解析的最终结果要么匹配要么不匹配。
+     * 判断切入点是否应该应用于给定的接口或目标类。
      *
      * @param target 匹配目标
      * @return 解析的最终结果

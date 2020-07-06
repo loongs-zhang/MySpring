@@ -16,34 +16,21 @@
 
 package com.dragon.springframework.aop;
 
-import com.dragon.springframework.aop.intercept.MethodInterceptor;
-
 /**
- * Base interface holding AOP <b>advice</b> (action to take at a joinpoint)
- * and a filter determining the applicability of the advice (such as
- * a pointcut). <i>This interface is not for use by Spring users, but to
- * allow for commonality in support for different types of advice.</i>
+ * 具有AOP通知（在连接点采取的操作）和确定通知适用性过滤器
+ * 的基本接口，Spring用户不使用此界面，而是允许通用性来支持
+ * 不同类型的通知。Spring AOP基于环绕通知通过方法拦截传递，
+ * Advisor界面允许支持不同类型的通知，例如之前和之后通知，
+ * 这些通知无需使用拦截实现。
  *
- * <p>Spring AOP is based around <b>around advice</b> delivered via method
- * <b>interception</b>, compliant with the AOP Alliance interception API.
- * The Advisor interface allows support for different types of advice,
- * such as <b>before</b> and <b>after</b> advice, which need not be
- * implemented using interception.
- *
- * @author Rod Johnson
- * @author Juergen Hoeller
+ * @author SuccessZhang
+ * @date 2020/07/03
  */
 public interface Advisor {
 
     /**
-     * Return the advice part of this aspect. An advice may be an
-     * interceptor, a before advice, a throws advice, etc.
-     *
-     * @return the advice that should apply if the pointcut matches
-     * @see MethodInterceptor
-     * @see BeforeAdvice
-     * @see ThrowsAdvice
-     * @see AfterReturningAdvice
+     * 返回此切面的通知部分，通知可以是拦截器，
+     * 事前通知，抛出通知等。
      */
     Advice getAdvice();
 

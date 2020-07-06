@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * After finally advice
+ * 最终通知。
  *
  * @author SuccessZhang
  * @date 2020/07/04
@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
 public @interface After {
 
     /**
-     * The pointcut expression where to bind the advice
+     * 绑定通知的切入点表达式。
      */
     @AliasFor("expression")
     String value() default "";

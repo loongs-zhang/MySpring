@@ -3,7 +3,7 @@ package com.dragon.springframework.aop;
 import java.lang.reflect.Method;
 
 /**
- * 表达式解析的顶层接口。
+ * {@link Pointcut}的一部分，检查目标方法是否符合通知。
  *
  * @author SuccessZhang
  * @date 2020/07/01
@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
 public interface MethodMatcher {
 
     /**
-     * 解析的最终结果要么匹配要么不匹配。
+     * 检查给定的方法是否匹配。
      *
      * @param target     匹配目标
      * @param expression 表达式
@@ -20,7 +20,7 @@ public interface MethodMatcher {
     boolean matches(Method target, String expression);
 
     /**
-     * 解析的最终结果要么匹配要么不匹配。
+     * 检查给定的方法是否匹配。
      *
      * @param target 匹配目标
      * @return 解析的最终结果

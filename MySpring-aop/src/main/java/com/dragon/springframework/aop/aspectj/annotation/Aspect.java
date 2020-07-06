@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Aspect declaration
+ * 切面声明。
  *
  * @author SuccessZhang
  * @date 2020/07/04
@@ -19,11 +19,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Aspect {
 
-    /**
-     * Per clause expression, defaults to singleton aspect
-     * <p/>
-     * Valid values are "" (singleton), "perthis(...)", etc
-     */
     @AliasFor(annotation = Component.class)
     String value() default "";
+
 }

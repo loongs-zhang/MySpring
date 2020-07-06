@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Before advice
+ * 前置通知。
  *
  * @author SuccessZhang
  * @date 2020/07/04
@@ -16,13 +16,14 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Before {
+
     /**
-     * The pointcut expression
-     * We allow "" as default for abstract pointcut
+     * 绑定通知的切入点表达式。
      */
     @AliasFor("expression")
     String value() default "";
 
     @AliasFor("value")
     String expression() default "";
+
 }

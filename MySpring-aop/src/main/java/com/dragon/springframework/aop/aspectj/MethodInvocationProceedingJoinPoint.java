@@ -5,6 +5,12 @@ import com.dragon.springframework.aop.intercept.ProceedingJoinPoint;
 import lombok.Data;
 
 /**
+ * AspectJ{@link ProceedingJoinPoint}接口的实现，
+ * 包装了{@link ProxyMethodInvocation}。
+ * 注意：{@link #getThis()}方法返回当前的Spring AOP代理，
+ * {@link #getTarget()}方法返回当前Spring AOP目标
+ * （没有目标则为null），目标是纯POJO，没有任何通知。
+ *
  * @author SuccessZhang
  * @date 2020/07/02
  */

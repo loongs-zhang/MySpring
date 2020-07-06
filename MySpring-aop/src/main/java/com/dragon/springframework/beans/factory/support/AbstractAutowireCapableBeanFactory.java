@@ -56,7 +56,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends DefaultSingleto
         if (beanDefinition == null) {
             return this.getBean(beanName, (Object[]) null);
         }
-        return this.getBean(beanName, beanDefinition.getInitArguments());
+        return this.getBean(beanName, beanDefinition.getBeanClass(), beanDefinition.getInitArguments());
     }
 
     @Override
@@ -71,7 +71,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends DefaultSingleto
         if (beanDefinition == null) {
             return this.getBean(requiredType, (Object[]) null);
         }
-        return this.getBean(requiredType, beanDefinition.getInitArguments());
+        return this.getBean(beanName, requiredType, beanDefinition.getInitArguments());
     }
 
     @Override

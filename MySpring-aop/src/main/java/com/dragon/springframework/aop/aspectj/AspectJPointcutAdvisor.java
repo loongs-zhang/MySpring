@@ -7,12 +7,10 @@ import com.dragon.springframework.core.Ordered;
 import lombok.Setter;
 
 /**
- * AspectJPointcutAdvisor that adapts an {@link AbstractAspectJAdvice}
- * to the {@link PointcutAdvisor} interface.
+ * 使{@link AbstractAspectJAdvice}适配为{@link PointcutAdvisor}接口。
  *
- * @author Adrian Colyer
- * @author Juergen Hoeller
- * @since 2.0
+ * @author SuccessZhang
+ * @date 2020/07/01
  */
 public class AspectJPointcutAdvisor implements PointcutAdvisor, Ordered {
 

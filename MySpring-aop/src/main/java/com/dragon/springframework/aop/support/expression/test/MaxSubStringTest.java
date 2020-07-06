@@ -13,7 +13,7 @@ public class MaxSubStringTest {
     public static void main(String[] args) {
         String x = "com.dragon.springframework.test.service.impl.TestServiceImpl";
         String y = "* com.dragon.springframework.test.service.TestService.setType(java.lang.String,com.dragon.springframework.test.pojo.Type)";
-        System.out.println(StringUtils.getMaxSubString(x, y));
+        System.out.println(StringUtils.getLeftSubString(x, y));
     }
 
 }

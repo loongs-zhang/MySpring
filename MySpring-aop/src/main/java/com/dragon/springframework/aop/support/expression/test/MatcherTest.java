@@ -14,7 +14,7 @@ public class MatcherTest {
     public static void main(String[] args) throws NoSuchMethodException {
         String expression = "* com..*Service.setType(java.lang.String,com.dragon.springframework.test.pojo.Type)";
         Method method = TestService.class.getDeclaredMethod("setType", String.class, Type.class);
-        ExpressionMatcher context = new ExpressionMatcher();
+        ExpressionMatcher context = ExpressionMatcher.getInstance();
         System.out.println(context.matches(method, expression));
     }
 }

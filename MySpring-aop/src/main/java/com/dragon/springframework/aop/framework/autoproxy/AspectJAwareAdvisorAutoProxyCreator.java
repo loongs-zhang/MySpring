@@ -6,6 +6,7 @@ import com.dragon.springframework.aop.aspectj.AspectJExpressionPointcut;
 import com.dragon.springframework.aop.aspectj.AspectJPointcutAdvisor;
 import com.dragon.springframework.aop.framework.ProxyFactory;
 import com.dragon.springframework.beans.config.BeanPostProcessor;
+import com.dragon.springframework.beans.factory.BeanFactory;
 import com.dragon.springframework.context.ApplicationContext;
 
 import java.lang.reflect.Method;
@@ -14,6 +15,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * {@link BeanPostProcessor}的实现，使用AOP代理包装每个合格的bean，
+ * 在调用bean本身之前将其委托给指定的拦截器。
+ * 主要参考了AbstractAutoProxyCreator和AbstractAdvisorAutoProxyCreator。
+ *
  * @author SuccessZhang
  * @date 2020/06/30
  */
@@ -39,8 +44,14 @@ public class AspectJAwareAdvisorAutoProxyCreator implements BeanPostProcessor {
         return proxyFactory.getProxy(targetClass.getClassLoader());
     }
 
+    /**
+     * 根据要应用的通知和Advisor，判断是否要代理给定的bean。
+     */
     private List<Advisor> getAdvicesAndAdvisorsForBean(Class<?> beanClass, String beanName) throws Exception {
         List<Advisor> advisors = new LinkedList<>();
+        if (isSpecialBean(beanName)) {
+            return advisors;
+        }
         for (Advisor advisor : applicationContext.getBeansOfType(Advisor.class).values()) {
             AspectJPointcutAdvisor pointcutAdvisor = (AspectJPointcutAdvisor) advisor;
             AspectJExpressionPointcut pointcut = (AspectJExpressionPointcut) pointcutAdvisor.getPointcut();
@@ -54,6 +65,10 @@ public class AspectJAwareAdvisorAutoProxyCreator implements BeanPostProcessor {
             }
         }
         return sortAdvisors(advisors);
+    }
+
+    private boolean isSpecialBean(String beanName) {
+        return beanName.contains(BeanFactory.SPECIAL_BEAN_INFIX);
     }
 
     private List<Advisor> sortAdvisors(List<Advisor> advisors) {

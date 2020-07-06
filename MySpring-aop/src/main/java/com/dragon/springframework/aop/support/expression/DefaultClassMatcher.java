@@ -2,10 +2,8 @@ package com.dragon.springframework.aop.support.expression;
 
 import com.dragon.springframework.aop.ClassFilter;
 import com.dragon.springframework.core.StringUtils;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -14,43 +12,36 @@ import java.util.regex.Pattern;
  * @author SuccessZhang
  * @date 2020/07/01
  */
+@NoArgsConstructor
 public class DefaultClassMatcher implements ClassFilter {
 
-    private static final Map<String, Class<?>> EXPRESSION_INTERFACE_CACHE = new ConcurrentHashMap<>();
+    private final ThreadLocal<String> expression = ThreadLocal.withInitial(() -> "");
 
-    @Setter
-    private String expression;
+    public void setExpression(String expression) {
+        this.expression.set(expression);
+    }
 
     @Override
     public boolean matches(Class target) {
-        return matches(target, this.expression);
+        try {
+            return matches(target, this.expression.get());
+        } finally {
+            this.expression.remove();
+        }
     }
 
     @Override
     public final boolean matches(Class target, String expression) {
         String targetName = target.getName();
-        String maxSubString = StringUtils.getMaxSubString(targetName, expression);
-        int begin = expression.indexOf(maxSubString);
-        String key = expression.substring(begin);
-        Class<?> theInterface = EXPRESSION_INTERFACE_CACHE.get(key);
-        if (theInterface == null) {
-            int length = maxSubString.length();
-            while (length < expression.length()) {
-                try {
-                    theInterface = Class.forName(expression.substring(begin, length - 1));
-                    EXPRESSION_INTERFACE_CACHE.put(key, theInterface);
-                    break;
-                } catch (ClassNotFoundException e) {
-                    length = expression.indexOf(".", length) + 1;
-                }
-            }
+        String leftSubString = StringUtils.getLeftSubString(targetName, expression);
+        int begin = expression.indexOf(leftSubString);
+        expression = expression.substring(begin)
+                .replaceAll("\\.\\.", "...");
+        boolean result = classMatch(targetName, expression);
+        for (Class anInterface : target.getInterfaces()) {
+            result = result || classMatch(anInterface.getName(), expression);
         }
-        if (theInterface != null &&
-                theInterface.isAssignableFrom(target)) {
-            ExpressionMatcher.REMAINING_EXPRESSION.set(expression.replaceAll(theInterface.getName() + "\\.", ""));
-            return true;
-        }
-        return classMatch(targetName, expression.replaceAll("\\.\\.", "..."));
+        return result;
     }
 
     private boolean classMatch(String target, String expression) {
@@ -69,7 +60,7 @@ public class DefaultClassMatcher implements ClassFilter {
                     ExpressionMatcher.REMAINING_EXPRESSION.set(expression.substring(expressionIndexOf + length + 1));
                     return true;
                 }
-                return expression.startsWith(ExpressionMatcher.REMAINING_EXPRESSION.get());
+                return false;
             }
             if (targetIndexOf + length + 1 > target.length()) {
                 return true;
@@ -81,6 +72,7 @@ public class DefaultClassMatcher implements ClassFilter {
         if (targetIndexOf == -1) {
             Pattern pattern = Pattern.compile(expression.substring(0, expressionIndexOf)
                     .replaceAll("\\*", ".*"));
+            ExpressionMatcher.REMAINING_EXPRESSION.set(expression.substring(expressionIndexOf + 1));
             return pattern.matcher(target).matches();
         }
         String targetPackage = target.substring(0, targetIndexOf);

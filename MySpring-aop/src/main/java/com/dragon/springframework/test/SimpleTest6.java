@@ -3,6 +3,7 @@ package com.dragon.springframework.test;
 import com.dragon.springframework.context.context.support.GenericXmlApplicationContext;
 import com.dragon.springframework.test.pojo.Type;
 import com.dragon.springframework.test.service.TestService;
+import com.dragon.springframework.test.service.UserService;
 
 /**
  * @author SuccessZhang
@@ -16,6 +17,13 @@ public class SimpleTest6 {
             testService.queryById("1");
             System.out.println();
             testService.setType("2", new Type("vip"));
+        }
+        System.out.println();
+        UserService userService = context.getBean(UserService.class);
+        if (userService != null) {
+            userService.queryById("3");
+            System.out.println();
+            userService.setType("4", new Type("vip2"));
         }
     }
 }

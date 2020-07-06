@@ -1,12 +1,7 @@
 package com.dragon.springframework.aop.support.expression;
 
-import com.dragon.springframework.aop.ClassFilter;
-import com.dragon.springframework.aop.MethodMatcher;
 import com.dragon.springframework.core.StringUtils;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -18,13 +13,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author SuccessZhang
  * @date 2020/07/01
  */
-@NoArgsConstructor
-@AllArgsConstructor
-public class ExpressionMatcher implements MethodMatcher, ClassFilter {
+public class ExpressionMatcher {
 
     private static final Map<String, Map<Method, Boolean>> CACHE = new ConcurrentHashMap<>(16);
 
-    @Getter
     private final ModifierMatcher modifierMatcher = new ModifierMatcher();
 
     @Getter
@@ -33,12 +25,17 @@ public class ExpressionMatcher implements MethodMatcher, ClassFilter {
     @Getter
     private final DefaultMethodMatcher methodMatcher = new DefaultMethodMatcher();
 
-    @Setter
-    private String expression;
+    private ExpressionMatcher() {
+    }
+
+    public static ExpressionMatcher getInstance() {
+        return Holder.SINGLETON;
+    }
 
     static final ThreadLocal<String> REMAINING_EXPRESSION = new ThreadLocal<>();
 
-    @Override
+    static final ThreadLocal<Boolean> MODIFIER_MATCHED = ThreadLocal.withInitial(() -> false);
+
     public boolean matches(Method target, String expression) {
         Map<Method, Boolean> expressionCache = CACHE.get(expression);
         if (expressionCache == null) {
@@ -56,6 +53,7 @@ public class ExpressionMatcher implements MethodMatcher, ClassFilter {
             return false;
         }
         left = modifierMatcher.matches(target, modifier);
+        MODIFIER_MATCHED.set(left);
         if (left) {
             middle = classMatcher.matches(target.getDeclaringClass(), packageAndMethod.replaceAll(" ", ""));
             int indexOf = expression.indexOf(target.getName());
@@ -71,23 +69,17 @@ public class ExpressionMatcher implements MethodMatcher, ClassFilter {
             }
         }
         isMatch = left && middle && right;
+        MODIFIER_MATCHED.remove();
         expressionCache.put(target, isMatch);
         CACHE.put(expression, expressionCache);
         return isMatch;
     }
 
-    @Override
-    public boolean matches(Method target) {
-        return matches(target, this.expression);
-    }
-
-    @Override
     public boolean matches(Class target, String expression) {
         return this.classMatcher.matches(target, expression);
     }
 
-    @Override
-    public boolean matches(Class target) {
-        return matches(target, this.expression);
+    private static class Holder {
+        private static final ExpressionMatcher SINGLETON = new ExpressionMatcher();
     }
 }

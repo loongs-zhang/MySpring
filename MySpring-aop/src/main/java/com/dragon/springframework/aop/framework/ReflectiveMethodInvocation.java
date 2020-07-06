@@ -10,6 +10,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 对于专门的MethodInvocation实现是有用的基类。
+ * 注意：此类被认为是内部的，不应直接访问。
+ * 公开的唯一原因是与现有框架集成，出于其他任何目的，
+ * 请改用{@link ProxyMethodInvocation}接口。
+ *
  * @author SuccessZhang
  * @date 2020/07/03
  */
@@ -21,41 +26,25 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 
     protected final Method method;
 
-    protected Object[] arguments = new Object[0];
+    protected Object[] arguments;
 
     private final Class<?> targetClass;
 
     /**
-     * Lazily initialized map of user-specific attributes for this invocation.
+     * 此调用的用户特定属性映射。
      */
     private Map<String, Object> userAttributes = new HashMap<>(16);
 
     /**
-     * List of MethodInterceptor and InterceptorAndDynamicMethodMatcher
-     * that need dynamic checks.
+     * 拦截器列表，在这里Spring原生还可能是InterceptorAndDynamicMethodMatcher。
      */
     protected final List<?> interceptorsAndDynamicMethodMatchers;
 
     /**
-     * Index from 0 of the current interceptor we're invoking.
-     * -1 until we invoke: then the current interceptor.
+     * 正在调用的当前拦截器的索引。
      */
     private int currentInterceptorIndex = -1;
 
-    /**
-     * Construct a new ReflectiveMethodInvocation with the given arguments.
-     *
-     * @param proxy                                the proxy object that the invocation was made on
-     * @param target                               the target object to invoke
-     * @param method                               the method to invoke
-     * @param arguments                            the arguments to invoke the method with
-     * @param targetClass                          the target class, for MethodMatcher invocations
-     * @param interceptorsAndDynamicMethodMatchers interceptors that should be applied,
-     *                                             along with any InterceptorAndDynamicMethodMatchers that need evaluation at runtime.
-     *                                             MethodMatchers included in this struct must already have been found to have matched
-     *                                             as far as was possibly statically. Passing an array might be about 10% faster,
-     *                                             but would complicate the code. And it would work only for static pointcuts.
-     */
     public ReflectiveMethodInvocation(
             Object proxy, Object target, Method method, Object[] arguments,
             Class<?> targetClass, List<Object> interceptorsAndDynamicMethodMatchers) {
@@ -76,7 +65,6 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
     public MethodInvocation invocableClone() {
         Object[] cloneArguments = this.arguments;
         if (this.arguments.length > 0) {
-            // Build an independent copy of the arguments array.
             cloneArguments = new Object[this.arguments.length];
             System.arraycopy(this.arguments, 0, cloneArguments, 0, this.arguments.length);
         }
@@ -85,7 +73,6 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 
     @Override
     public MethodInvocation invocableClone(Object... arguments) {
-        // Create the MethodInvocation clone.
         try {
             ReflectiveMethodInvocation clone = (ReflectiveMethodInvocation) clone();
             clone.arguments = arguments;
@@ -129,15 +116,12 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
     public Object proceed() throws Throwable {
         //如果Interceptor执行完了，则执行joinPoint
         if (this.currentInterceptorIndex == this.interceptorsAndDynamicMethodMatchers.size() - 1) {
-            return invokeJoinpoint();
+            return invokeJoinPoint();
         }
         Object interceptorOrInterceptionAdvice = this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);
-        //如果要动态匹配joinPoint
+        //尝试执行拦截链
         if (interceptorOrInterceptionAdvice instanceof MethodInterceptor) {
-            // Evaluate dynamic method matcher here: static part will already have
-            // been evaluated and found to match.
             MethodInterceptor dm = (MethodInterceptor) interceptorOrInterceptionAdvice;
-            //动态匹配：运行时参数是否满足匹配条件
             return dm.invoke(this);
         } else {
             //动态匹配失败，跳过当前Interceptor，调用下一个Interceptor
@@ -146,13 +130,9 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
     }
 
     /**
-     * Invoke the joinpoint using reflection.
-     * Subclasses can override this to use custom invocation.
-     *
-     * @return the return value of the joinpoint
-     * @throws Throwable if invoking the joinpoint resulted in an exception
+     * 使用反射调用连接点，子类可以重写此方法以使用自定义调用。
      */
-    protected Object invokeJoinpoint() throws Throwable {
+    protected Object invokeJoinPoint() throws Throwable {
         return this.method.invoke(this.target, this.arguments);
     }
 
@@ -161,6 +141,11 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
         return this.target;
     }
 
+    /**
+     * Spring原生实现的是org.aopalliance.intercept.Joinpoint接口，
+     * 没有定义getTarget()方法，而作者把Spring定义的接口和
+     * AspectJ定义的接口合并了，所以会实现这个本来不该实现的方法。
+     */
     @Override
     public Object getTarget() {
         return this.target;

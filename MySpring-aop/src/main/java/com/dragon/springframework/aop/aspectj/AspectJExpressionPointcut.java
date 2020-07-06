@@ -3,27 +3,33 @@ package com.dragon.springframework.aop.aspectj;
 import com.dragon.springframework.aop.Advice;
 import com.dragon.springframework.aop.ClassFilter;
 import com.dragon.springframework.aop.MethodMatcher;
+import com.dragon.springframework.aop.Pointcut;
 import com.dragon.springframework.aop.support.ExpressionPointcut;
+import com.dragon.springframework.aop.support.expression.DefaultClassMatcher;
+import com.dragon.springframework.aop.support.expression.DefaultMethodMatcher;
 import com.dragon.springframework.aop.support.expression.ExpressionMatcher;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * {@link Pointcut}的实现，使用AspectJ解析切入点表达式
+ * （切入点表达式值是AspectJ表达式，另外，作者没有引入
+ * AspectJ依赖，而是自己另写类完成解析）。由于通过代理模型处理，
+ * 因此仅支持方法执行切入点。
+ *
  * @author SuccessZhang
  * @date 2020/07/02
  */
 public class AspectJExpressionPointcut implements ExpressionPointcut, ClassFilter, MethodMatcher, Serializable {
 
-    private final ExpressionMatcher matcher;
+    private final ExpressionMatcher matcher = ExpressionMatcher.getInstance();
 
     private static final String EXECUTION = "execution";
 
@@ -35,7 +41,7 @@ public class AspectJExpressionPointcut implements ExpressionPointcut, ClassFilte
     private String expression;
 
     /**
-     * 原生方法对应的拦截器链缓存
+     * 原生方法对应的拦截器链缓存。
      */
     private Map<Method, Set<Advice>> shadowMatchCache = new ConcurrentHashMap<>(32);
 
@@ -45,24 +51,6 @@ public class AspectJExpressionPointcut implements ExpressionPointcut, ClassFilte
         expression = expression.replaceAll(EXECUTION + "\\(", "");
         expression = expression.substring(0, expression.length() - 1);
         this.expression = expression;
-        matcher = new ExpressionMatcher(expression);
-    }
-
-    private Set<Advice> getAdvices(Method target) {
-        for (Map.Entry<Method, Set<Advice>> entry : shadowMatchCache.entrySet()) {
-            Method method = entry.getKey();
-            Class<?> impl = method.getDeclaringClass();
-            List<Class<?>> interfaces = Arrays.asList(impl.getInterfaces());
-            Class<?> theInterface = target.getDeclaringClass();
-            if (theInterface.isAssignableFrom(impl) || interfaces.contains(theInterface)) {
-                if (method.getName().equals(target.getName()) &&
-                        method.getReturnType().equals(target.getReturnType()) &&
-                        equalParamTypes(method.getParameterTypes(), target.getParameterTypes())) {
-                    return entry.getValue();
-                }
-            }
-        }
-        return new LinkedHashSet<>();
     }
 
     public boolean hasAdvice(Class<?> beanClass) {
@@ -80,18 +68,6 @@ public class AspectJExpressionPointcut implements ExpressionPointcut, ClassFilte
     public boolean hasAdvice(Method method) {
         Set<Advice> advices = shadowMatchCache.get(method);
         return advices != null && !advices.isEmpty();
-    }
-
-    private boolean equalParamTypes(Class<?>[] params1, Class<?>[] params2) {
-        if (params1.length == params2.length) {
-            for (int i = 0; i < params1.length; i++) {
-                if (params1[i] != params2[i]) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
     }
 
     public Set<Advice> addAdvice(Method method, Advice advice) {
@@ -127,11 +103,15 @@ public class AspectJExpressionPointcut implements ExpressionPointcut, ClassFilte
 
     @Override
     public ClassFilter getClassFilter() {
-        return this.matcher;
+        DefaultClassMatcher classMatcher = this.matcher.getClassMatcher();
+        classMatcher.setExpression(this.expression);
+        return classMatcher;
     }
 
     @Override
     public MethodMatcher getMethodMatcher() {
-        return this.matcher;
+        DefaultMethodMatcher methodMatcher = this.matcher.getMethodMatcher();
+        methodMatcher.setExpression(this.expression);
+        return methodMatcher;
     }
 }

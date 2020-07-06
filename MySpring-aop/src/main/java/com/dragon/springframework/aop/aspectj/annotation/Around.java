@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Around advice
+ * 环绕通知。
  *
  * @author SuccessZhang
  * @date 2020/07/04
@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
 public @interface Around {
 
     /**
-     * The pointcut expression where to bind the advice
+     * 绑定通知的切入点表达式。
      */
     @AliasFor("expression")
     String value() default "";

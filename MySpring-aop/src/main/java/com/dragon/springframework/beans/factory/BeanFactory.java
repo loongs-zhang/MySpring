@@ -45,6 +45,14 @@ public interface BeanFactory {
     String FACTORY_BEAN_PREFIX = "&";
 
     /**
+     * 表示切面Bean及通知Bean的特殊符号，
+     * 这些Bean的名称统一为：简单类名/方法名（首字母小写）+"->"+表达式，
+     * 例如：doBefore->* com.dragon.springframework.test..*.*(..)
+     * 注意：Spring原生没有这个，属于作者原创（其实是为了方便写代码）。
+     */
+    String SPECIAL_BEAN_INFIX = "->";
+
+    /**
      * 根据beanName从IOC中获取bean。
      */
     Object getBean(String beanName) throws Exception;

@@ -39,16 +39,12 @@ public interface JoinPoint {
     Object getThis();
 
     /**
-     * <p> Returns the target object.  This will always be
-     * the same object as that matched by the <code>target</code> pointcut
-     * designator.  Unless you specifically need this reflective access,
-     * you should use the <code>target</code> pointcut designator to
-     * get at this object for better static typing and performance.</p>
+     * 返回通知目标对象。
      */
     Object getTarget();
 
     /**
-     * <p>Returns the arguments at this join point.</p>
+     * 返回此连接点的参数。
      */
     Object[] getArgs();
 

@@ -17,7 +17,8 @@
 package com.dragon.springframework.aop.intercept;
 
 /**
- * 此接口表示程序中的调用，调用是联接点，可以被拦截器拦截。
+ * 此接口表示程序中的调用，
+ * 调用是连接点，可以被拦截器拦截。
  *
  * @author SuccessZhang
  * @date 2020/07/01

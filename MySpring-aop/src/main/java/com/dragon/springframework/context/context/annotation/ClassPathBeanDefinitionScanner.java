@@ -144,7 +144,7 @@ public class ClassPathBeanDefinitionScanner implements BeanFactoryAware {
             return beanDefinitions;
         }
         String factoryBeanName = getFactoryBeanName(beanClass, component);
-        String pointcutName = factoryBeanName + "->" + expression;
+        String pointcutName = factoryBeanName + BeanFactory.SPECIAL_BEAN_INFIX + expression;
         Class<AspectJExpressionPointcut> pointcutClass = AspectJExpressionPointcut.class;
         BeanDefinition pointcutBeanDefinition = doCreateBeanDefinition(pointcutClass.getName(),
                 pointcutClass, pointcutName, true, null, null, new Object[]{pointcutName, expression});
@@ -196,7 +196,7 @@ public class ClassPathBeanDefinitionScanner implements BeanFactoryAware {
                 continue;
             }
 
-            String adviceBeanName = adviceClass.getSimpleName() + "->" + pointCutOrExpression;
+            String adviceBeanName = adviceClass.getSimpleName() + BeanFactory.SPECIAL_BEAN_INFIX + pointCutOrExpression;
             BeanDefinition adviceDefinition = doCreateBeanDefinition(adviceClass.getName(), adviceClass,
                     adviceBeanName, true, null, null, initArgs);
             registry.registerBeanDefinition(adviceDefinition.getFactoryBeanName(), adviceDefinition);
@@ -204,7 +204,7 @@ public class ClassPathBeanDefinitionScanner implements BeanFactoryAware {
 
             Class<AspectJPointcutAdvisor> advisorClass = AspectJPointcutAdvisor.class;
             BeanDefinition advisorDefinition = doCreateBeanDefinition(advisorClass.getName(), advisorClass,
-                    method.getName() + "->" + pointCutOrExpression, true, null, null,
+                    method.getName() + BeanFactory.SPECIAL_BEAN_INFIX + pointCutOrExpression, true, null, null,
                     new Object[]{beanFactory.getBean(adviceBeanName, adviceClass), expressionPointcut});
             registry.registerBeanDefinition(advisorDefinition.getFactoryBeanName(), advisorDefinition);
             beanDefinitions.add(advisorDefinition);

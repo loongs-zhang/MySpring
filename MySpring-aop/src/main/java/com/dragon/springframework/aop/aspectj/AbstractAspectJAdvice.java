@@ -23,34 +23,41 @@ import java.util.Map;
 @NoArgsConstructor
 public abstract class AbstractAspectJAdvice implements Advice, Ordered {
 
+    /**
+     * 切面Bean Class类型。
+     */
     protected Class<?> declaringClass;
 
+    /**
+     * 回调通知方法的名称。
+     */
     protected String methodName;
 
+    /**
+     * 回调的通知方法。
+     */
     protected Method aspectJAdviceMethod;
 
     protected AspectJExpressionPointcut pointcut;
 
     /**
-     * The aspect (ref bean) in which this advice was defined
-     * (used when determining advice precedence so that we can determine
-     * whether two pieces of advice come from the same aspect).
+     * 切面Bean实例。
      */
     protected Object aspect;
 
     /**
-     * The order of declaration of this advice within the aspect.
+     * 该通知在切面中的声明顺序。
      */
     protected int declarationOrder;
 
     /**
-     * Non-null if after throwing advice binds the thrown value
+     * 绑定回调时异常参数的名称。
      */
     @Setter
     protected String throwingName;
 
     /**
-     * Non-null if after returning advice binds the return value
+     * 绑定回调时返回值的名称。
      */
     @Setter
     protected String returningName;
@@ -93,13 +100,7 @@ public abstract class AbstractAspectJAdvice implements Advice, Ordered {
     }
 
     /**
-     * Invoke the advice method.
-     *
-     * @param joinPoint   the JoinPointMatch that matched this execution join point
-     * @param returnValue the return value from the method execution (may be null)
-     * @param ex          the exception thrown by the method execution (may be null)
-     * @return the invocation result
-     * @throws Throwable in case of invocation failure
+     * 回调切面Bean实例中的通知方法。
      */
     protected Object invokeAdviceMethod(JoinPoint joinPoint, Object returnValue, Throwable ex) throws Throwable {
         this.aspectJAdviceMethod.setAccessible(true);
@@ -129,6 +130,9 @@ public abstract class AbstractAspectJAdvice implements Advice, Ordered {
         return this.aspectJAdviceMethod.invoke(this.aspect, params);
     }
 
+    /**
+     * 通知类型。
+     */
     public enum AdviceType {
 
         /**
@@ -156,6 +160,9 @@ public abstract class AbstractAspectJAdvice implements Advice, Ordered {
          */
         afterThrowing(5);
 
+        /**
+         * 通知的优先级，数值越小优先级越高。
+         */
         private final int priority;
 
         AdviceType(int priority) {

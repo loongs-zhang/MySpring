@@ -62,9 +62,12 @@ public class StringUtils {
     }
 
     /**
-     * 获取最大公共子串。
+     * 从左边开始获取公共子串。
      */
-    public static String getMaxSubString(String sting1, String sting2) {
+    public static String getLeftSubString(String sting1, String sting2) {
+        if (isEmpty(sting1) || isEmpty(sting2)) {
+            return "";
+        }
         //1.先找到最大的字符串和最小的字符串。 根据长度进行比较
         String max = sting1.length() > sting2.length() ? sting1 : sting2;
         String min = sting1.equals(max) ? sting2 : sting1;
@@ -77,19 +80,9 @@ public class StringUtils {
         }
         //3.开始进行相关的循环操作了。
         for (int i = 0; i < minLength; i++) {
-            // 从开头处开始,最后的位置是minLength; 因为subString 截取时不到后面的那个参数，所以这里是<=minLength;
             for (int start = 0, end = minLength - i; end <= minLength; start++, end++) {
-                /*
-                  第一次循环时， 先看整个是否进行了包含，去掉0位，即defg 是否在abcdef 里面。
-                  第二次循环时，要把defg 去掉一位，看是否在abcdef 里面。 截取时，有def 和efg 两种。
-                  第三次循环时，把defg 去掉两位。 截取有: de ef fg 三种方式。
-                  第四次循环时， 把defg 去掉三位，有 d e f g 四种方式。 如果还不存在，则说明没有相同的子串。
-                  外层循环 为最小的字符串的长度。 0~ length_1
-                  内层循环为: 从0 开始，结束位置为 length-i, 判断是否在，如果不再，则进行整体移动， 为1 ~length-i+1,2~ length-i+2
-                  直到 end 结束位置为 length , 因为substring 时不会取出最后的索引值。
-                 */
                 String temp = min.substring(start, end);
-                if (max.contains(temp)) {
+                if (max.startsWith(temp)) {
                     return temp;
                 }
             }

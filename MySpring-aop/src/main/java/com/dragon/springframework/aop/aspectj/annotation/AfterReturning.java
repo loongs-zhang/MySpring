@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * After returning advice
+ * 正常返回通知。
  *
  * @author SuccessZhang
  * @date 2020/07/04
@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
 public @interface AfterReturning {
 
     /**
-     * The pointcut expression where to bind the advice
+     * 绑定通知的切入点表达式。
      */
     @AliasFor("expression")
     String value() default "";
@@ -27,7 +27,7 @@ public @interface AfterReturning {
     String expression() default "";
 
     /**
-     * The name of the argument in the advice signature to bind the returned value to
+     * 将返回值绑定到参数的名称。
      */
     String returning() default "";
 

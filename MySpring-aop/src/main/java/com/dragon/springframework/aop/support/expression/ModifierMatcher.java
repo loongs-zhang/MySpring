@@ -1,7 +1,6 @@
 package com.dragon.springframework.aop.support.expression;
 
 import com.dragon.springframework.aop.MethodMatcher;
-import lombok.Setter;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -16,12 +15,19 @@ import java.util.List;
  */
 public class ModifierMatcher implements MethodMatcher {
 
-    @Setter
-    private String expression;
+    private final ThreadLocal<String> expression = ThreadLocal.withInitial(() -> "");
+
+    public void setExpression(String expression) {
+        this.expression.set(expression);
+    }
 
     @Override
     public boolean matches(Method target) {
-        return matches(target, this.expression);
+        try {
+            return matches(target, this.expression.get());
+        } finally {
+            this.expression.remove();
+        }
     }
 
     @Override

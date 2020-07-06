@@ -25,11 +25,7 @@ public class GenericXmlApplicationContext extends GenericApplicationContext {
     public GenericXmlApplicationContext(String... resourceLocations) {
         try {
             reader.setBeanFactory(this.getBeanFactory());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        load(resourceLocations);
-        try {
+            load(resourceLocations);
             refresh();
         } catch (Exception e) {
             e.printStackTrace();

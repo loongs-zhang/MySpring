@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Pointcut declaration
+ * 切入点声明。
  *
  * @author SuccessZhang
  * @date 2020/07/04
@@ -18,8 +18,7 @@ import java.lang.annotation.Target;
 public @interface Pointcut {
 
     /**
-     * The pointcut expression
-     * We allow "" as default for abstract pointcut
+     * 切入点表达式。
      */
     @AliasFor("expression")
     String value() default "";
