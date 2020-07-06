@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 /**
- * 此AOP代理使用的AOP Alliance MethodInvocation的实现。
+ * 此AOP代理使用FastClass而不是反射调用，性能得到了一定的提高。
  *
  * @author SuccessZhang
  * @date 2020/07/04
@@ -23,9 +23,6 @@ public class CglibMethodInvocation extends ReflectiveMethodInvocation {
         this.methodProxy = methodProxy;
     }
 
-    /**
-     * 使用FastClass而不是反射调用，性能得到了一定的提高。
-     */
     @Override
     protected Object invokeJoinPoint() throws Throwable {
         return this.methodProxy.invokeSuper(this.proxy, this.arguments);

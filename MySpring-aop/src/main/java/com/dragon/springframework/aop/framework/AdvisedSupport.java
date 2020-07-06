@@ -13,6 +13,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * AOP代理配置管理器的基类，本身不是AOP代理，
+ * 但此类的子类通常直接从中获得AOP代理实例的工厂
+ * （作者改为了直接从子类本身获取）。
+ * 此类解放了子类对于Advices和Advisor的管理，
+ * 用于保存代理的快照，但并没有实现创建代理的方法。
+ *
  * @author SuccessZhang
  * @date 2020/07/03
  */

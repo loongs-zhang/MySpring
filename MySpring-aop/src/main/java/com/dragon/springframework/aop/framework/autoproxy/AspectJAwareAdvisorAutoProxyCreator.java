@@ -38,7 +38,7 @@ public class AspectJAwareAdvisorAutoProxyCreator implements BeanPostProcessor {
         if (advisors.isEmpty()) {
             return bean;
         }
-        //至少有一个通知，需要创建代理对象
+        //至少有一个通知才需要创建代理对象
         ProxyFactory proxyFactory = new ProxyFactory(bean);
         proxyFactory.addAdvisors(advisors);
         return proxyFactory.getProxy(targetClass.getClassLoader());
