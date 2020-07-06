@@ -62,8 +62,4 @@ public class ProxyHelper {
     public static void putMethodIndex(Method method, Integer index) {
         METHOD_INDEX_CACHE.put(method, index);
     }
-
-    public static boolean isProxy(Object bean) {
-        return bean.getClass().getSimpleName().startsWith(PROXY_CLASS_PREFIX);
-    }
 }
