@@ -72,13 +72,19 @@ public class AnnotationUtils {
             }
             // 遍历该注解上的所有别名描述器，并判断目标注解的属性是否有被其他注解覆盖
             for (AliasDescriptor descriptor : descriptors) {
-                if (descriptor.getAliasedAnnotationType() == targetAnnotationType) {
-                    String aliasedAttributeName = descriptor.getAliasedAttributeName();
-                    if (!attributes.containsKey(aliasedAttributeName)) {
-                        Object value = ReflectionUtils.invokeMethod(descriptor.getSourceAttribute(),
-                                getMergedAnnotation(element, descriptor.getSourceAnnotationType()));
-                        attributes.put(aliasedAttributeName, value);
-                        handleForEachOtherSituation(attributes, targetAnnotationType, descriptor.getAliasedAttribute(), value);
+                for (Class<? extends Annotation> aliasedAnnotationType : descriptor.getAliasedAnnotationTypes()) {
+                    if (aliasedAnnotationType == targetAnnotationType) {
+                        String[] aliasedAttributeNames = descriptor.getAliasedAttributeNames();
+                        for (String aliasedAttributeName : aliasedAttributeNames) {
+                            if (!attributes.containsKey(aliasedAttributeName)) {
+                                Object value = ReflectionUtils.invokeMethod(descriptor.getSourceAttribute(),
+                                        getMergedAnnotation(element, descriptor.getSourceAnnotationType()));
+                                attributes.put(aliasedAttributeName, value);
+                                for (Method aliasedAttribute : descriptor.getAliasedAttributes()) {
+                                    handleForEachOtherSituation(attributes, targetAnnotationType, aliasedAttribute, value);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -139,11 +145,13 @@ public class AnnotationUtils {
      * 处理同一注解中不同属性互为别名的情况。
      */
     private static void handleForEachOtherSituation(Map<String, Object> attributes, Class<? extends Annotation> targetType, Method attribute, Object value) {
-        String attributeOverrideName = getAttributeOverrideName(attribute, targetType);
-        if (attributeOverrideName == null) {
+        String[] attributeOverrideNames = getAttributeOverrideName(attribute, targetType);
+        if (attributeOverrideNames == null) {
             return;
         }
-        attributes.put(attributeOverrideName, value);
+        for (String attributeOverrideName : attributeOverrideNames) {
+            attributes.put(attributeOverrideName, value);
+        }
     }
 
     /**
@@ -196,7 +204,7 @@ public class AnnotationUtils {
      * 获取通过{@link AliasFor}配置的
      * 同层次覆盖属性的名称。
      */
-    public static String getAttributeOverrideName(Method attribute, Class<? extends Annotation> metaAnnotationType) {
+    public static String[] getAttributeOverrideName(Method attribute, Class<? extends Annotation> metaAnnotationType) {
         Assert.notNull(attribute, "attribute must not be null");
         Assert.notNull(metaAnnotationType, "metaAnnotationType must not be null");
         Assert.isTrue(Annotation.class != metaAnnotationType,
