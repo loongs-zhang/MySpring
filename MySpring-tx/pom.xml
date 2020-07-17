@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>MySpring-final</artifactId>
+    <artifactId>MySpring-tx</artifactId>
     <packaging>war</packaging>
 
     <dependencies>
@@ -23,11 +23,11 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>MySpring-ioc</artifactId>
+            <artifactId>MySpring-bdioc</artifactId>
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>MySpring-di</artifactId>
+            <artifactId>MySpring-ioc&amp;di</artifactId>
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
@@ -44,7 +44,7 @@
     </dependencies>
 
     <build>
-        <finalName>MySpring-final</finalName>
+        <finalName>MySpring-tx</finalName>
         <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
             <plugins>
                 <plugin>
