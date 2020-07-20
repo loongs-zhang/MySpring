@@ -21,7 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 此类中的所有返回注解、注解数组或{@link Map}的公共方法
- * 都支持通过{@link AliasFor @AliasFor}配置的属性别名。
+ * 都支持通过{@link AliasFor}配置的属性别名，另外作者还
+ * 支持了在一个属性上配置多个别名。
  *
  * @author SuccessZhang
  * @date 2020/06/11

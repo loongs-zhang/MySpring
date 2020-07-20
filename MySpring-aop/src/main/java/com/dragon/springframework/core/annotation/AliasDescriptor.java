@@ -55,7 +55,12 @@ public class AliasDescriptor {
         return descriptor;
     }
 
-    public static AliasFor[] getAliasFors(AnnotatedElement element) {
+    /**
+     * 先尝试获取{@link AliasFors}，如果获取不到，
+     * 再尝试获取{@link AliasFor}，如果能获取到，
+     * 返回一个只有单个元素的数组，仍然获取不到则返回null。
+     */
+    private static AliasFor[] getAliasFors(AnnotatedElement element) {
         AliasFors aliasFors = element.getAnnotation(AliasFors.class);
         if (aliasFors == null) {
             AliasFor aliasFor = element.getAnnotation(AliasFor.class);
@@ -63,9 +68,8 @@ public class AliasDescriptor {
                 return null;
             }
             return new AliasFor[]{aliasFor};
-        } else {
-            return aliasFors.value();
         }
+        return aliasFors.value();
     }
 
     /**

@@ -15,7 +15,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -34,8 +34,8 @@
             <artifactId>spring-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>jdk.tools</groupId>
-            <artifactId>jdk.tools</artifactId>
+            <groupId>com.sun</groupId>
+            <artifactId>tools</artifactId>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>

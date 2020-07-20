@@ -1,7 +1,6 @@
 package com.dragon.springframework.aop.framework;
 
 import com.dragon.springframework.core.proxy.cglib.MethodProxy;
-import com.sun.istack.internal.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -16,8 +15,8 @@ public class CglibMethodInvocation extends ReflectiveMethodInvocation {
 
     private final MethodProxy methodProxy;
 
-    public CglibMethodInvocation(Object proxy, @Nullable Object target, Method method,
-                                 Object[] arguments, @Nullable Class<?> targetClass,
+    public CglibMethodInvocation(Object proxy, Object target, Method method,
+                                 Object[] arguments, Class<?> targetClass,
                                  List<Object> interceptorsAndDynamicMethodMatchers, MethodProxy methodProxy) {
         super(proxy, target, method, arguments, targetClass, interceptorsAndDynamicMethodMatchers);
         this.methodProxy = methodProxy;

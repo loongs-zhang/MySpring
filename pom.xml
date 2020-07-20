@@ -16,6 +16,7 @@
         <module>MySpring-aop</module>
         <module>MySpring-mvc</module>
         <module>MySpring-tx</module>
+        <module>MySpring-lombok</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -62,6 +63,12 @@
                 <version>1.0-SNAPSHOT</version>
             </dependency>
             <dependency>
+                <groupId>com.example</groupId>
+                <artifactId>MySpring-lombok</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.11</version>
@@ -72,7 +79,7 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>1.18.10</version>
-                <scope>provided</scope>
+                <scope>compile</scope>
             </dependency>
 
             <!-- log -->
@@ -161,11 +168,11 @@
 
             <!-- tools.jar -->
             <dependency>
-                <groupId>jdk.tools</groupId>
-                <artifactId>jdk.tools</artifactId>
+                <groupId>com.sun</groupId>
+                <artifactId>tools</artifactId>
                 <version>1.8</version>
                 <scope>system</scope>
-                <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
+                <systemPath>${java.home}/../lib/tools.jar</systemPath>
             </dependency>
 
             <!-- jdbc -->

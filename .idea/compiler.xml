@@ -8,13 +8,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="MySpring-design" />
+        <module name="MySpring-ioc&amp;di" />
+        <module name="MySpring-bdioc" />
+        <module name="MySpring-demo" />
+        <module name="MySpring-tx" />
         <module name="MySpring-aop" />
         <module name="MySpring-reflect" />
-        <module name="MySpring-bdioc" />
-        <module name="MySpring-tx" />
         <module name="MySpring-mvc" />
-        <module name="MySpring-ioc&amp;di" />
-        <module name="MySpring-demo" />
       </profile>
     </annotationProcessing>
   </component>
@@ -25,6 +25,7 @@
       <module name="MySpring-demo" options="" />
       <module name="MySpring-design" options="" />
       <module name="MySpring-ioc&amp;di" options="" />
+      <module name="MySpring-lombok" options="-proc:none" />
       <module name="MySpring-mvc" options="" />
       <module name="MySpring-reflect" options="-parameters" />
       <module name="MySpring-tx" options="" />
