@@ -15,26 +15,6 @@
     <dependencies>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>MySpring-reflect</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>MySpring-design</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>MySpring-bdioc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>MySpring-ioc&amp;di</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>MySpring-aop</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
             <artifactId>MySpring-mvc</artifactId>
         </dependency>
         <dependency>

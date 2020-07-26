@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>MySpring-ioc&amp;di</artifactId>
+    <artifactId>MySpring-iocdi</artifactId>
 
     <dependencies>
         <dependency>
