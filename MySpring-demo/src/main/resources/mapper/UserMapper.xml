@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.UserMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="aid">
+        insert into
+        `user`(id,`name`,`type`,mobile,email,password)
+        values ((select
+        UUID()),#{name},#{type},#{mobile},#{email},#{password})
+    </insert>
+
+    <update id="setName">
+        update `user`
+        set `name` = #{targetName}
+        where `name` = #{originalName}
+    </update>
+
+    <select id="queryByAid" resultType="com.example.demo.pojo.User">
+        select * from `user`
+        where aid = #{aid}
+        limit 1
+    </select>
+
+    <select id="queryAll" resultType="com.example.demo.pojo.User">
+        select * from `user`
+    </select>
+
+    <delete id="deleteAll">
+        delete from `user`
+    </delete>
+</mapper>

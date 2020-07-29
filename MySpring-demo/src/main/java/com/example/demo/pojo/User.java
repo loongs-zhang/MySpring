@@ -28,6 +28,11 @@ public class User {
     private String name;
 
     /**
+     * 用户类型
+     */
+    private String type;
+
+    /**
      * 手机号
      */
     private String mobile;
