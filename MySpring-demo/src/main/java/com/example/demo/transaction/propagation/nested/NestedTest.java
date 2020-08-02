@@ -36,7 +36,7 @@ public class NestedTest {
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class},
             transactionManager = "transactionManager",
-            propagation = Propagation.NESTED)
+            propagation = Propagation.REQUIRED)
     public void test3() {
         nestedSuccessService.success();
         nestedService.success();
@@ -45,7 +45,7 @@ public class NestedTest {
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class},
             transactionManager = "transactionManager",
-            propagation = Propagation.NESTED)
+            propagation = Propagation.REQUIRED)
     public void test4() {
         nestedSuccessService.success();
         nestedService.fail();
@@ -53,7 +53,7 @@ public class NestedTest {
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class},
             transactionManager = "transactionManager",
-            propagation = Propagation.NESTED)
+            propagation = Propagation.REQUIRED)
     public void test5() {
         nestedSuccessService.success();
         try {

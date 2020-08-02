@@ -36,7 +36,7 @@ public class RequiresNewTest {
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class},
             transactionManager = "transactionManager",
-            propagation = Propagation.REQUIRES_NEW)
+            propagation = Propagation.REQUIRED)
     public void test3() {
         requiresNewSuccessService.success();
         requiresNewService.success();
@@ -45,7 +45,7 @@ public class RequiresNewTest {
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class},
             transactionManager = "transactionManager",
-            propagation = Propagation.REQUIRES_NEW)
+            propagation = Propagation.REQUIRED)
     public void test4() {
         requiresNewSuccessService.success();
         requiresNewService.fail();
@@ -53,7 +53,7 @@ public class RequiresNewTest {
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class},
             transactionManager = "transactionManager",
-            propagation = Propagation.REQUIRES_NEW)
+            propagation = Propagation.REQUIRED)
     public void test5() {
         requiresNewSuccessService.success();
         try {

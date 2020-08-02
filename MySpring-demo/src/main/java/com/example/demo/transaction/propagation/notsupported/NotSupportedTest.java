@@ -36,7 +36,7 @@ public class NotSupportedTest {
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class},
             transactionManager = "transactionManager",
-            propagation = Propagation.NOT_SUPPORTED)
+            propagation = Propagation.REQUIRED)
     public void test3() {
         notSupportedSuccessService.success();
         notSupportedService.success();
@@ -45,22 +45,10 @@ public class NotSupportedTest {
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class},
             transactionManager = "transactionManager",
-            propagation = Propagation.NOT_SUPPORTED)
+            propagation = Propagation.REQUIRED)
     public void test4() {
         notSupportedSuccessService.success();
         notSupportedService.fail();
-    }
-
-    @Transactional(rollbackFor = {RuntimeException.class, Exception.class},
-            transactionManager = "transactionManager",
-            propagation = Propagation.NOT_SUPPORTED)
-    public void test5() {
-        notSupportedSuccessService.success();
-        try {
-            notSupportedService.fail();
-        } catch (Exception e) {
-            System.out.println("test5 exception");
-        }
     }
 
     private static void printUsers(UserMapper userMapper) {
@@ -101,14 +89,6 @@ public class NotSupportedTest {
         try {
             userMapper.deleteAll();
             bean.test4();
-        } catch (Exception ignored) {
-        }
-        System.out.println("after:");
-        printUsers(userMapper);
-        System.out.println("---------------------------------------------------------");
-        try {
-            userMapper.deleteAll();
-            bean.test5();
         } catch (Exception ignored) {
         }
         System.out.println("after:");

@@ -25,36 +25,29 @@ public class MandatoryTest {
 
     public void test1() {
         mandatorySuccessService.success();
-        mandatoryService.success();
-        throw new RuntimeException("外面抛出异常");
     }
 
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class},
+            transactionManager = "transactionManager",
+            propagation = Propagation.REQUIRED)
     public void test2() {
         mandatorySuccessService.success();
-        mandatoryService.fail();
-    }
-
-    @Transactional(rollbackFor = {RuntimeException.class, Exception.class},
-            transactionManager = "transactionManager",
-            propagation = Propagation.MANDATORY)
-    public void test3() {
-        mandatorySuccessService.success();
         mandatoryService.success();
         throw new RuntimeException("外面抛出异常");
     }
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class},
             transactionManager = "transactionManager",
-            propagation = Propagation.MANDATORY)
-    public void test4() {
+            propagation = Propagation.REQUIRED)
+    public void test3() {
         mandatorySuccessService.success();
         mandatoryService.fail();
     }
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class},
             transactionManager = "transactionManager",
-            propagation = Propagation.MANDATORY)
-    public void test5() {
+            propagation = Propagation.REQUIRED)
+    public void test4() {
         mandatorySuccessService.success();
         try {
             mandatoryService.fail();
@@ -101,14 +94,6 @@ public class MandatoryTest {
         try {
             userMapper.deleteAll();
             bean.test4();
-        } catch (Exception ignored) {
-        }
-        System.out.println("after:");
-        printUsers(userMapper);
-        System.out.println("---------------------------------------------------------");
-        try {
-            userMapper.deleteAll();
-            bean.test5();
         } catch (Exception ignored) {
         }
         System.out.println("after:");

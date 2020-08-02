@@ -36,7 +36,7 @@ public class SupportsTest {
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class},
             transactionManager = "transactionManager",
-            propagation = Propagation.SUPPORTS)
+            propagation = Propagation.REQUIRED)
     public void test3() {
         supportsSuccessService.success();
         supportsService.success();
@@ -45,7 +45,7 @@ public class SupportsTest {
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class},
             transactionManager = "transactionManager",
-            propagation = Propagation.SUPPORTS)
+            propagation = Propagation.REQUIRED)
     public void test4() {
         supportsSuccessService.success();
         supportsService.fail();
@@ -53,7 +53,7 @@ public class SupportsTest {
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class},
             transactionManager = "transactionManager",
-            propagation = Propagation.SUPPORTS)
+            propagation = Propagation.REQUIRED)
     public void test5() {
         supportsSuccessService.success();
         try {
@@ -70,6 +70,9 @@ public class SupportsTest {
         }
     }
 
+    /**
+     * 外围方法开启事务，插入“张三”、“李四”方法都在外围方法的事务中运行，加入外围方法事务，所以三个方法同一个事务。外围方法或内部方法抛出异常，整个事务全部回滚。
+     */
     public static void main(String[] args) {
         GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:applicationContext.xml");
         UserMapper userMapper = context.getBean(UserMapper.class);

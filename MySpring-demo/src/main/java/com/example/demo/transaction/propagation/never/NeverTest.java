@@ -36,7 +36,7 @@ public class NeverTest {
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class},
             transactionManager = "transactionManager",
-            propagation = Propagation.NEVER)
+            propagation = Propagation.REQUIRED)
     public void test3() {
         neverSuccessService.success();
         neverService.success();
@@ -48,19 +48,8 @@ public class NeverTest {
             propagation = Propagation.NEVER)
     public void test4() {
         neverSuccessService.success();
-        neverService.fail();
-    }
-
-    @Transactional(rollbackFor = {RuntimeException.class, Exception.class},
-            transactionManager = "transactionManager",
-            propagation = Propagation.NEVER)
-    public void test5() {
-        neverSuccessService.success();
-        try {
-            neverService.fail();
-        } catch (Exception e) {
-            System.out.println("test5 exception");
-        }
+        neverService.success();
+        throw new RuntimeException("外面抛出异常");
     }
 
     private static void printUsers(UserMapper userMapper) {
@@ -101,14 +90,6 @@ public class NeverTest {
         try {
             userMapper.deleteAll();
             bean.test4();
-        } catch (Exception ignored) {
-        }
-        System.out.println("after:");
-        printUsers(userMapper);
-        System.out.println("---------------------------------------------------------");
-        try {
-            userMapper.deleteAll();
-            bean.test5();
         } catch (Exception ignored) {
         }
         System.out.println("after:");
