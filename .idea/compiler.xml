@@ -7,14 +7,15 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="MySpring-demo" />
         <module name="MySpring-design" />
+        <module name="MySpring-mvc" />
+        <module name="MySpring-bdioc" />
+        <module name="MySpring-iocdi" />
         <module name="MySpring-aop" />
         <module name="MySpring-reflect" />
-        <module name="MySpring-bdioc" />
         <module name="MySpring-tx" />
-        <module name="MySpring-mvc" />
         <module name="MySpring-ioc&amp;di" />
-        <module name="MySpring-demo" />
       </profile>
     </annotationProcessing>
   </component>

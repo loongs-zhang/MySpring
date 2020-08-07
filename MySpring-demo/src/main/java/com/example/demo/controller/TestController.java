@@ -41,22 +41,6 @@ public class TestController {
         return "200";
     }
 
-    @RequestMapping("/freemarker500")
-    public String error(ModelMap model) {
-        try {
-            throw new RuntimeException("故意抛出异常!");
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-            model.addAttribute("detail", throwable.getMessage());
-            StringBuilder sb = new StringBuilder("\n");
-            for (StackTraceElement stackTraceElement : throwable.getStackTrace()) {
-                sb.append(stackTraceElement).append("\n");
-            }
-            model.addAttribute("stackTrace", sb.toString());
-            return "500";
-        }
-    }
-
     @ResponseBody
     @RequestMapping("/exception")
     public int exception(HttpServletRequest request,
