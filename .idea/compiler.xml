@@ -11,7 +11,6 @@
         <module name="MySpring-design" />
         <module name="MySpring-mvc" />
         <module name="MySpring-bdioc" />
-        <module name="MySpring-iocdi" />
         <module name="MySpring-aop" />
         <module name="MySpring-reflect" />
         <module name="MySpring-tx" />
