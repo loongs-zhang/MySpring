@@ -6,9 +6,6 @@ package com.example.design.principle.ocp.before;
  *
  * @author SuccessZhang
  * @date 2020/05/04
- * <p>
- * 546600665
- * 小米贷款
  */
 @SuppressWarnings("unused")
 public class Commodity implements Sell {
@@ -20,6 +17,10 @@ public class Commodity implements Sell {
 
     public Commodity(double price) {
         this.price = price;
+    }
+
+    public double getOriginPrice(){
+        return this.price;
     }
 
     /**

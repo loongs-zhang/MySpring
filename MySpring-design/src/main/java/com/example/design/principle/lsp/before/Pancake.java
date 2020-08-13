@@ -7,6 +7,6 @@ package com.example.design.principle.lsp.before;
 public class Pancake extends AbstractPancake {
     @Override
     public double getPrice() {
-        return 3.5D;
+        return 3.5;
     }
 }

@@ -6,6 +6,6 @@ package com.example.design.principle.lsp.before;
  */
 public class Egg {
     public double getPrice() {
-        return 1D;
+        return 1;
     }
 }
