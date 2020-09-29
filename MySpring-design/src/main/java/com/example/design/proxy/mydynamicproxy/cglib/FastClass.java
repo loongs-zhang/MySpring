@@ -37,26 +37,22 @@ public interface FastClass {
     }
 
     /**
-     * Return the index of the matching method. The index may be used
-     * later to invoke the method with less overhead. If more than one
-     * method matches (i.e. they differ by return type only), one is
-     * chosen arbitrarily.
+     * 返回匹配方法的索引。以后可以使用索引*以较少的开销调用该方法。
+     * 如果有多个方法匹配（即它们仅因返回类型而不同），则是任意选择的。
      *
-     * @param name           the method name
-     * @param parameterTypes the parameter array
-     * @return the index, or <code>-1</code> if none is found.
-     * @see #invoke(int, Object, Object[])
+     * @param name           方法名称
+     * @param parameterTypes 参数类型数组
+     * @return 索引，如果找不到会返回-1
      */
     int getIndex(String name, Class[] parameterTypes);
 
     /**
-     * Invoke the method with the specified index.
+     * 用指定的索引调用方法。
      *
-     * @param index the method index
-     * @param obj   the object the underlying method is invoked from
-     * @param args  the arguments used for the method call
-     * @throws InvocationTargetException if the underlying method throws an exception
-     * @see #getIndex(String, Class[])
+     * @param index 方法索引
+     * @param obj   调用基础方法的对象
+     * @param args  调用方法的参数
+     * @return 调用方法后的返回值
      */
     Object invoke(int index, Object obj, Object[] args) throws InvocationTargetException;
 
