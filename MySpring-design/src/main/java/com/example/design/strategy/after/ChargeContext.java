@@ -13,7 +13,6 @@ import java.util.Map;
  * @author SuccessZhang
  * @date 2020/05/21
  */
-@SuppressWarnings("unused")
 public class ChargeContext {
 
     private static final Map<ChargeType, ChargeStrategy> STRATEGIES = new HashMap<>();

@@ -4,11 +4,10 @@ package com.example.design.strategy.before;
  * @author SuccessZhang
  * @date 2020/05/21
  */
-@SuppressWarnings("unused")
 public enum RebateStrategy implements ChargeStrategy {
 
     /**
-     * 单例
+     * 枚举单例
      */
     INSTANCE(300, 100);
 
@@ -21,6 +20,9 @@ public enum RebateStrategy implements ChargeStrategy {
         this.rebate = rebate;
     }
 
+    /**
+     * 满减价
+     */
     @Override
     public double charge(double price) {
         double result = price;
