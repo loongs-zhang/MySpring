@@ -1,6 +1,8 @@
-package com.example.design.decorator.before;
+package com.example.design.decorator.after;
 
 /**
+ * 抽象化妆师。
+ *
  * @author SuccessZhang
  * @date 2020/05/11
  */

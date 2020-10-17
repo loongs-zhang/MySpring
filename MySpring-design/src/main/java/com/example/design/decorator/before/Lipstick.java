@@ -1,6 +1,8 @@
-package com.example.design.decorator.after;
+package com.example.design.decorator.before;
 
 /**
+ * 涂口红增加颜值。
+ *
  * @author SuccessZhang
  * @date 2020/05/11
  */

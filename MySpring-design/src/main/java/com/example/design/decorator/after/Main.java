@@ -1,7 +1,7 @@
-package com.example.design.decorator.before;
+package com.example.design.decorator.after;
 
-import com.example.design.decorator.after.EyeShadow;
-import com.example.design.decorator.after.Lipstick;
+import com.example.design.decorator.before.EyeShadow;
+import com.example.design.decorator.before.Lipstick;
 
 /**
  * @author SuccessZhang

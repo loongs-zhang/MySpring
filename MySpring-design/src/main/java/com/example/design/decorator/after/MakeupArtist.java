@@ -1,8 +1,10 @@
-package com.example.design.decorator.before;
+package com.example.design.decorator.after;
 
-import com.example.design.decorator.after.Makeup;
+import com.example.design.decorator.before.Makeup;
 
 /**
+ * 化妆师。
+ *
  * @author SuccessZhang
  * @date 2020/05/11
  */
