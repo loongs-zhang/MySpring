@@ -18,6 +18,7 @@ public class Order2 {
 
     public void act() {
         if (this.stateAction == null) {
+            System.out.println("非法状态");
             return;
         }
         this.stateAction.act(this);

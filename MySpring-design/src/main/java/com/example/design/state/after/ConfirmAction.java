@@ -3,6 +3,8 @@ package com.example.design.state.after;
 import com.example.design.state.before.State;
 
 /**
+ * (买家)确认收货动作。
+ *
  * @author SuccessZhang
  * @date 2020/06/02
  */
