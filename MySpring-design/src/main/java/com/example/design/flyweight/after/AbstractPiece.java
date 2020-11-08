@@ -12,16 +12,31 @@ import lombok.ToString;
 @ToString(of = "color")
 public abstract class AbstractPiece {
 
+    /**
+     * 棋子的颜色
+     */
     protected Color color;
 
-    protected int x;
+    /**
+     * 棋子的x轴坐标
+     */
+    protected Integer x;
 
-    protected int y;
+    /**
+     * 棋子的y轴坐标
+     */
+    protected Integer y;
 
+    /**
+     * 共享对象的构造方法
+     */
     protected AbstractPiece(Color color) {
         this.color = color;
     }
 
+    /**
+     * 非共享对象的构造方法
+     */
     public AbstractPiece(int x, int y) {
         this.x = x;
         this.y = y;

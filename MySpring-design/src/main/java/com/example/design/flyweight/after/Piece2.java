@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
+ * 可以共享的棋子对象
+ *
  * @author SuccessZhang
  * @date 2020/05/26
  */

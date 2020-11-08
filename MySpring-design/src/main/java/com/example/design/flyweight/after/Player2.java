@@ -19,6 +19,6 @@ public class Player2 {
     }
 
     public boolean dropPiece(int x, int y) {
-        return this.board.encroach(PieceFactory.create(this.color), new Location(x, y));
+        return this.board.occupy(PieceFactory.create(this.color), new Location(x, y));
     }
 }
