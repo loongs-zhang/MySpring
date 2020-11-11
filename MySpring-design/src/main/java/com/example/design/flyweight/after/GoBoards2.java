@@ -16,7 +16,7 @@ public class GoBoards2 {
         this.board = new Piece2[lines][lines];
     }
 
-    public boolean encroach(AbstractPiece piece, Location location) {
+    public boolean occupy(AbstractPiece piece, Location location) {
         int x = location.getX();
         int y = location.getY();
         if (board[x][y] == null) {

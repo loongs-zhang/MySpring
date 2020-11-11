@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 享元工厂
+ *
  * @author SuccessZhang
  * @date 2020/05/26
  */
