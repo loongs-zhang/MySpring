@@ -11,6 +11,6 @@ public enum State {
     CATCH,
     //同学听课
     LISTEN,
-    //同学玩手机
-    PLAY
+    //同学睡觉
+    SLEEP
 }

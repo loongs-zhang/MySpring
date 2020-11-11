@@ -23,11 +23,14 @@ public class Student {
 
     public Student(String name, Teacher teacher) {
         this.name = name;
-        this.state = State.PLAY;
+        this.state = State.SLEEP;
         this.teacher = teacher;
         this.replyCatch();
     }
 
+    /**
+     * 反侦察
+     */
     public void replyCatch() {
         executor.submit(() -> {
             while (true) {
@@ -39,7 +42,7 @@ public class Student {
                 if (teacher.getState() == State.CATCH) {
                     this.state = State.LISTEN;
                 } else if (teacher.getState() == State.TEACH) {
-                    this.state = State.PLAY;
+                    this.state = State.SLEEP;
                 }
             }
         });
