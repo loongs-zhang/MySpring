@@ -14,8 +14,15 @@ public class ObserverAfterTest {
         Student2 student1 = new Student2(teacher, "张三");
         Student2 student2 = new Student2(teacher, "李四");
         Student2 student3 = new Student2(teacher, "王五");
+
+        //我为人人，人人为我
         student1.addObserver(student2);
         student1.addObserver(student3);
+        student2.addObserver(student1);
+        student2.addObserver(student3);
+        student3.addObserver(student1);
+        student3.addObserver(student2);
+
         List<Student2> students = new ArrayList<>(Arrays.asList(student1, student2, student3));
         while (true) {
             try {

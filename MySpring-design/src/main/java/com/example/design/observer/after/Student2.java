@@ -24,7 +24,7 @@ public class Student2 extends Responder implements Notifier {
     public Student2(Teacher2 teacher, String name) {
         super(teacher);
         this.observers = new ArrayList<>();
-        this.state = State.SLEEP;
+        this.state = State.PLAY;
         this.name = name;
         this.addObserver(this);
         executor.submit(() -> {
@@ -54,9 +54,11 @@ public class Student2 extends Responder implements Notifier {
         for (Observer observer : observers) {
             switch (state) {
                 case TEACH:
-                    observer.reply(State.SLEEP);
+                    //老师讲课，咱就玩
+                    observer.reply(State.PLAY);
                     break;
                 case CATCH:
+                    //老师来抓，咱就听
                     observer.reply(State.LISTEN);
                     break;
                 default:

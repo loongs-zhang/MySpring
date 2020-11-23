@@ -4,6 +4,8 @@ import com.example.design.observer.before.State;
 import lombok.Data;
 
 /**
+ * 响应者，对老师的行为做出回应
+ *
  * @author SuccessZhang
  * @date 2020/06/01
  */
