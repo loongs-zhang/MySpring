@@ -4,9 +4,11 @@ package com.example.design.composite.before;
  * @author SuccessZhang
  * @date 2020/05/27
  */
-@SuppressWarnings("unused")
 public class Leaf {
 
+    /**
+     * 树叶所属的层级
+     */
     private final int level;
 
     public Leaf(int level) {

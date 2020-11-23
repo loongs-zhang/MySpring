@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class Branch2 extends AbstractNode {
 
-    private List<AbstractNode> nodes = new ArrayList<>();
+    private final List<AbstractNode> nodes = new ArrayList<>();
 
     public Branch2(int level) {
         super(level);

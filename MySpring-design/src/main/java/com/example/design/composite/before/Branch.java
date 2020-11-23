@@ -7,14 +7,22 @@ import java.util.List;
  * @author SuccessZhang
  * @date 2020/05/27
  */
-@SuppressWarnings("unused")
 public class Branch {
 
+    /**
+     * 树枝所属的层级
+     */
     private final int level;
 
-    private List<Branch> branches = new ArrayList<>();
+    /**
+     * 树枝集合
+     */
+    private final List<Branch> branches = new ArrayList<>();
 
-    private List<Leaf> leaves = new ArrayList<>();
+    /**
+     * 树叶集合
+     */
+    private final List<Leaf> leaves = new ArrayList<>();
 
     public Branch(int level) {
         this.level = level;
@@ -36,6 +44,9 @@ public class Branch {
         return this.leaves.remove(leaf);
     }
 
+    /**
+     * 展示层级关系
+     */
     public void showLevel() {
         System.out.print(this.level);
         for (int i = 0; i < this.level; i++) {

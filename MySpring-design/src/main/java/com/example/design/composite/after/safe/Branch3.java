@@ -7,10 +7,9 @@ import java.util.List;
  * @author SuccessZhang
  * @date 2020/05/27
  */
-@SuppressWarnings("unused")
 public class Branch3 extends AbstractNode2 {
 
-    private List<AbstractNode2> nodes = new ArrayList<>();
+    private final List<AbstractNode2> nodes = new ArrayList<>();
 
     public Branch3(int level) {
         super(level);
