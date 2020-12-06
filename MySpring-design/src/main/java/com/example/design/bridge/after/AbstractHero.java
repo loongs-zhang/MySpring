@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 抽象角色
+ *
  * @author SuccessZhang
- * @date 2020/12/05/
+ * @date 2020/12/05
  */
 public abstract class AbstractHero {
 
@@ -21,10 +23,16 @@ public abstract class AbstractHero {
      */
     public abstract void show();
 
+    /**
+     * 获得了装备
+     */
     public void addEquipment(Equipment equipment) {
         this.equipments.add(equipment);
     }
 
+    /**
+     * 学习了新技能
+     */
     public void learnSkill(Skill skill) {
         this.skills.add(skill);
     }
